@@ -1,4 +1,6 @@
-package com.pz.KKBus.Model;
+package com.pz.KKBus.Model.Entites;
+
+import com.pz.KKBus.Model.Role;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
