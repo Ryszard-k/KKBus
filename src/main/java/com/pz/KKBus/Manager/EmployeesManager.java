@@ -10,6 +10,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeesManager {
@@ -19,6 +21,29 @@ public class EmployeesManager {
     @Autowired
     public EmployeesManager(EmployeesRepo employeesRepo) {
         this.employeesRepo = employeesRepo;
+    }
+
+    public Iterable<Employees> findAll(){
+        return employeesRepo.findAll();
+    }
+
+    public List<Employees> findByLastName(String lastName){
+        return employeesRepo.findByLastName(lastName);
+    }
+
+    public Optional<Employees> findById(Long id){
+        return employeesRepo.findById(id);
+    }
+
+    public Employees save(Employees employees){
+        return employeesRepo.save(employees);
+    }
+
+    public Optional<Employees> deleteById(Long id){
+        Optional<Employees> deleted = employeesRepo.findById((Long) id);
+        employeesRepo.deleteById(id);
+
+        return deleted;
     }
 
     @EventListener(ApplicationReadyEvent.class)
