@@ -4,7 +4,6 @@ import com.pz.KKBus.Model.EmployeesRepo;
 import com.pz.KKBus.Model.Entites.Employees;
 import com.pz.KKBus.Model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -49,10 +48,10 @@ public class EmployeesManager {
     @EventListener(ApplicationReadyEvent.class)
     public void fillEmployees(){
         employeesRepo.save(new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin));
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, 5000));
         employeesRepo.save(new Employees((long) 2,"Anna",
-                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker));
+                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, 3000));
         employeesRepo.save(new Employees((long) 3,"Andrzej",
-                "Konrad", LocalDate.parse("1988-05-20"), Role.Driver));
+                "Konrad", LocalDate.parse("1988-05-20"), Role.Driver, 4000));
     }
 }

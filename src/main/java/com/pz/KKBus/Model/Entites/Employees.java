@@ -1,11 +1,10 @@
 package com.pz.KKBus.Model.Entites;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.pz.KKBus.Model.Role;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -17,16 +16,20 @@ public class Employees {
     private String firstName;
     private String lastName;
     private LocalDate birthDate;
-    private Enum<Role> role;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+    private int salary;
 
     public Employees(){}
 
-    public Employees(Long id, String firstName, String lastName, LocalDate birthDate, Enum<Role> role) {
+    public Employees(Long id, String firstName, String lastName, LocalDate birthDate, Role role, int salary) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.role = role;
+        this.salary = salary;
     }
 
     public Long getId() {
@@ -61,11 +64,19 @@ public class Employees {
         this.birthDate = birthDate;
     }
 
-    public Enum<Role> getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(Enum<Role> role) {
+    public void setRole(Role role) {
         this.role = role;
+    }
+
+    public int getSalary() {
+        return salary;
+    }
+
+    public void setSalary(int salary) {
+        this.salary = salary;
     }
 }
