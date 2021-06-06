@@ -1,28 +1,34 @@
 package com.pz.KKBus.Model.Entites;
 
 import com.pz.KKBus.Model.Role;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.sun.istack.NotNull;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 
 @Entity
 @Table(name = "Customer")
-public class Customer implements UserDetails {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotNull
     private String firstName;
+
+    @NotNull
     private String lastName;
+
+    @NotNull
     private LocalDate birthDate;
+
+    @NotNull
     private String email;
+
+    @NotNull
     private Long phoneNumber;
+
     private String username;
     private String password;
     private Role role;
@@ -37,11 +43,6 @@ public class Customer implements UserDetails {
         this.username = username;
         this.password = password;
         this.role = role;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(role.name()));
     }
 
     public Role getRole() {
@@ -102,26 +103,6 @@ public class Customer implements UserDetails {
 
     public String getUsername() {
         return username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
     }
 
     public void setUsername(String username) {

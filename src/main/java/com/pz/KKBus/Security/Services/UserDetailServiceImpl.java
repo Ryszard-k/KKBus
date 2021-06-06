@@ -1,6 +1,7 @@
-package com.pz.KKBus.Manager;
+package com.pz.KKBus.Security.Services;
 
 import com.pz.KKBus.Model.CustomerRepo;
+import com.pz.KKBus.Model.Entites.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +21,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return  customerRepo.findByUsername(s);
+        Customer customer = customerRepo.findByUsername(s);
+
+        return UserDetailsImpl.build(customer);
     }
 }
