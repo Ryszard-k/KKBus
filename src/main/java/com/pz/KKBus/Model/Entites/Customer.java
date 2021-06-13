@@ -2,13 +2,23 @@ package com.pz.KKBus.Model.Entites;
 
 import com.pz.KKBus.Model.Role;
 import com.sun.istack.NotNull;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 
 @Entity
 @Table(name = "Customer")
-public class Customer {
+public class Customer implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,19 +31,27 @@ public class Customer {
     private String lastName;
 
     @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
     @NotNull
+    @Email
     private String email;
 
     @NotNull
-    private Long phoneNumber;
+    @Min(9)
+    @Max(9)
+    private Integer phoneNumber;
 
     private String username;
     private String password;
-    private Role role;
 
-    public Customer(Long id, String firstName, String lastName, LocalDate birthDate, String email, Long phoneNumber, String username, String password, Role role) {
+    @Enumerated(EnumType.STRING)
+    private Role role;
+    private boolean isEnabled;
+
+    public Customer(Long id, String firstName, String lastName, LocalDate birthDate, @Email String email,
+                    Integer phoneNumber, String username, String password, Role role, boolean isEnabled) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -43,6 +61,14 @@ public class Customer {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.isEnabled = isEnabled;
+    }
+
+    public Customer() {
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 
     public Role getRole() {
@@ -93,11 +119,11 @@ public class Customer {
         this.email = email;
     }
 
-    public Long getPhoneNumber() {
+    public Integer getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Long phoneNumber) {
+    public void setPhoneNumber(Integer phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -105,8 +131,33 @@ public class Customer {
         return username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singleton(new SimpleGrantedAuthority(role.name()));
     }
 
     public String getPassword() {
@@ -116,4 +167,5 @@ public class Customer {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }

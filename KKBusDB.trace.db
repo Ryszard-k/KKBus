@@ -113,3 +113,11 @@ select employees0_.id as id1_0_0_, employees0_.birth_date as birth_da2_0_0_, emp
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1340)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1329)
 	at com.pz.KKBus.KkBusApplication.main(KkBusApplication.java:10)
+2021-06-13 17:15:12 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Błąd składniowy w wyrażeniu SQL "DELTE[*] FROM CUSTOMER WHERE ID = 3"; oczekiwano "DELETE, DROP, DECLARE, DEALLOCATE"
+Syntax error in SQL statement "DELTE[*] FROM CUSTOMER WHERE ID = 3"; expected "DELETE, DROP, DECLARE, DEALLOCATE"; SQL statement:
+DELTE FROM CUSTOMER WHERE ID = 3 [42001-200]
+2021-06-13 17:15:23 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Błąd składniowy w wyrażeniu SQL "DELTE[*] FROM CUSTOMER WHERE ID = 3"; oczekiwano "DELETE, DROP, DECLARE, DEALLOCATE"
+Syntax error in SQL statement "DELTE[*] FROM CUSTOMER WHERE ID = 3"; expected "DELETE, DROP, DECLARE, DEALLOCATE"; SQL statement:
+DELTE FROM CUSTOMER WHERE ID = 3 [42001-200]

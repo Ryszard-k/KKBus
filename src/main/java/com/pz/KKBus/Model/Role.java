@@ -4,6 +4,6 @@ public enum Role {
     Admin(),
     Driver(),
     OfficeWorker(),
-    CustomerRole();
-
+    CustomerEnabled(),
+    CustomerDisabled();
 }

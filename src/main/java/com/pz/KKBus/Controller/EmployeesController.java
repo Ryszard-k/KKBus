@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/admin")
 public class EmployeesController {
 
     private final EmployeesManager employeesManager;
@@ -22,7 +22,7 @@ public class EmployeesController {
         this.employeesManager = employeesManager;
     }
 
-    @GetMapping
+    @GetMapping("/employees")
     public ResponseEntity getEmployees(){
         Iterable<Employees> foundEmployees = employeesManager.findAll();
         int iterations = 0;
@@ -35,7 +35,7 @@ public class EmployeesController {
             return new ResponseEntity<>(foundEmployees, HttpStatus.OK);
     }
 
-    @GetMapping("/{lastName}")
+    @GetMapping("/employees/{lastName}")
     public ResponseEntity getByLastName(@PathVariable String lastName){
         List<Employees> foundLastName = employeesManager.findByLastName(lastName);
         if(foundLastName.isEmpty()){
@@ -44,7 +44,7 @@ public class EmployeesController {
             return new ResponseEntity<>(foundLastName, HttpStatus.OK);
     }
 
-    @PostMapping(
+    @PostMapping(path = "/employees",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -56,7 +56,7 @@ public class EmployeesController {
             return new ResponseEntity<>("Empty input data", HttpStatus.BAD_REQUEST);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/employees/{id}")
     public ResponseEntity updateEmployee(@RequestBody Employees employees, @PathVariable Long id) {
         Optional<Employees> foundCar = employeesManager.findById(id);
         if (foundCar.isPresent()) {
@@ -66,7 +66,7 @@ public class EmployeesController {
             return new ResponseEntity<>("Not found car to update!", HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/employees/{id}")
     public ResponseEntity<Object> deleteCar(@PathVariable Long id) {
         Optional<Employees> foundCar = employeesManager.findById(id);
         if (foundCar.isPresent()) {
