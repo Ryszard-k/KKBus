@@ -1,4 +1,4 @@
-package com.pz.KKBus.Model;
+package com.pz.KKBus.Model.Repositories;
 
 import com.pz.KKBus.Model.Entites.Employees;
 import org.springframework.data.repository.CrudRepository;

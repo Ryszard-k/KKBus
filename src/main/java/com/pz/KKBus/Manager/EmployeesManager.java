@@ -1,6 +1,6 @@
 package com.pz.KKBus.Manager;
 
-import com.pz.KKBus.Model.EmployeesRepo;
+import com.pz.KKBus.Model.Repositories.EmployeesRepo;
 import com.pz.KKBus.Model.Entites.Employees;
 import com.pz.KKBus.Model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @Service
 public class EmployeesManager {
 
-    private EmployeesRepo employeesRepo;
+    private final EmployeesRepo employeesRepo;
 
     @Autowired
     public EmployeesManager(EmployeesRepo employeesRepo) {
@@ -39,7 +39,7 @@ public class EmployeesManager {
     }
 
     public Optional<Employees> deleteById(Long id){
-        Optional<Employees> deleted = employeesRepo.findById((Long) id);
+        Optional<Employees> deleted = employeesRepo.findById(id);
         employeesRepo.deleteById(id);
 
         return deleted;

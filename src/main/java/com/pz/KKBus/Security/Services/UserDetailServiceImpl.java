@@ -1,7 +1,6 @@
 package com.pz.KKBus.Security.Services;
 
-import com.pz.KKBus.Model.CustomerRepo;
-import com.pz.KKBus.Model.Entites.Customer;
+import com.pz.KKBus.Model.Repositories.CustomerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,7 +1,6 @@
-package com.pz.KKBus.Model;
+package com.pz.KKBus.Model.Repositories;
 
 import com.pz.KKBus.Model.Entites.Customer;
-import com.pz.KKBus.Model.Entites.Employees;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +12,8 @@ public interface CustomerRepo extends JpaRepository<Customer, Long> {
 
     Optional<Customer> findByUsername(String username);
 
-    List<Customer> findByLastName(String lastName);
+    Optional<Customer> findByLastName(String lastName);
+
+    Customer findTopByOrderByIdDesc();
 
 }

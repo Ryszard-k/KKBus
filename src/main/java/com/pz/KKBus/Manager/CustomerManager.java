@@ -1,36 +1,42 @@
 package com.pz.KKBus.Manager;
 
-import com.pz.KKBus.Model.CustomerRepo;
+import com.pz.KKBus.Model.Entites.Token;
+import com.pz.KKBus.Model.Repositories.CustomerRepo;
 import com.pz.KKBus.Model.Entites.Customer;
+import com.pz.KKBus.Model.Repositories.TokenRepo;
 import com.pz.KKBus.Model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class CustomerManager {
 
     private CustomerRepo customerRepo;
     private PasswordEncoder passwordEncoder;
+    private TokenRepo tokenRepo;
+    private MailManager mailManager;
 
     @Autowired
-    public CustomerManager(CustomerRepo customerRepo, PasswordEncoder passwordEncoder) {
+    public CustomerManager(CustomerRepo customerRepo, PasswordEncoder passwordEncoder, TokenRepo tokenRepo, MailManager mailManager) {
         this.customerRepo = customerRepo;
         this.passwordEncoder = passwordEncoder;
+        this.tokenRepo = tokenRepo;
+        this.mailManager = mailManager;
     }
 
     public Iterable<Customer> findAll(){
         return customerRepo.findAll();
     }
 
-    public List<Customer> findByLastName(String lastName){
+    public Optional<Customer> findByLastName(String lastName){
         return customerRepo.findByLastName(lastName);
     }
 
@@ -42,20 +48,31 @@ public class CustomerManager {
         customer.setUsername(usernameGenerator(customer));
         customer.setPassword(passwordEncoder.encode(passwordGenerator()));
         customer.setRole(Role.CustomerDisabled);
-        customer.setEnabled(true);
+        sendToken(customer);
 
         return customerRepo.save(customer);
     }
 
     public Optional<Customer> deleteById(Long id){
-        Optional<Customer> deleted = customerRepo.findById((Long) id);
+        Optional<Customer> deleted = Optional.ofNullable(customerRepo.findById((Long) id).orElseThrow(() ->
+                new IndexOutOfBoundsException("Customer not found")));
         customerRepo.deleteById(id);
 
         return deleted;
     }
 
+    public Optional<Customer> passwordUpdate(String username, String updates){
+        return Optional.ofNullable(customerRepo.findByUsername(username)
+                .map(customer1 -> {
+                    customer1.setPassword(passwordEncoder.encode(updates));
+                    return customerRepo.save(customer1);
+                })
+                .orElseThrow(() -> new UsernameNotFoundException(username)));
+    }
+
     public String usernameGenerator(Customer customer){
-        String username = customer.getFirstName().substring(0,3) + customer.getLastName().substring(0,3);
+        String username = customer.getFirstName().substring(0,3) + customer.getLastName().substring(0,3) +
+                (customerRepo.findTopByOrderByIdDesc().getId() + 1);
         return username;
     }
 
@@ -80,6 +97,22 @@ public class CustomerManager {
         }
         System.out.println(String.valueOf(password));
         return String.valueOf(password);
+
+    }
+
+    private void sendToken(Customer customer) {
+        String tokenValue = UUID.randomUUID().toString();
+        Token token = new Token();
+        token.setValue(tokenValue);
+        token.setCustomer(customer);
+        tokenRepo.save(token);
+        String url = "http://localhost:8080/token?value=" + tokenValue;
+        try {
+            mailManager.sendMail(customer.getEmail(), "Potwierdzenie konta", url + "\n" + "Username: " +
+                            customer.getUsername(), false);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
 
     }
 
