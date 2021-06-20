@@ -1,17 +1,12 @@
-package com.pz.KKBus.Manager;
+package com.pz.KKBus.Manager.Schedules;
 
 import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowice;
 import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowiceDeparture;
 import com.pz.KKBus.Model.Repositories.SchedulesRepo.KrakowToKatowiceDepartureRepo;
 import com.pz.KKBus.Model.Repositories.SchedulesRepo.KrakowToKatowiceRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;

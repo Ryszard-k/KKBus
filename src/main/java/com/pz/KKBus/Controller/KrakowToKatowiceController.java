@@ -1,28 +1,23 @@
 package com.pz.KKBus.Controller;
 
-import com.pz.KKBus.Manager.KrakowToKatowiceManager;
+import com.pz.KKBus.Manager.Schedules.KrakowToKatowiceManager;
 import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowice;
-import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowiceDeparture;
-import com.pz.KKBus.Model.Repositories.SchedulesRepo.KrakowToKatowiceRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/startPage")
-public class StartPageController {
+public class KrakowToKatowiceController {
 
     private KrakowToKatowiceManager krakowToKatowiceManager;
 
     @Autowired
-    public StartPageController(KrakowToKatowiceManager krakowToKatowiceManager) {
+    public KrakowToKatowiceController(KrakowToKatowiceManager krakowToKatowiceManager) {
         this.krakowToKatowiceManager = krakowToKatowiceManager;
     }
 
