@@ -1,4 +1,4 @@
-package com.pz.KKBus.Controller;
+package com.pz.KKBus.Controller.Schedules;
 
 import com.pz.KKBus.Manager.Schedules.KrakowToKatowiceManager;
 import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowice;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/startPage")
+@RequestMapping("/krakowToKatowice")
 public class KrakowToKatowiceController {
 
     private KrakowToKatowiceManager krakowToKatowiceManager;

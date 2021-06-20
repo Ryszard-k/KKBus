@@ -1,4 +1,4 @@
-package com.pz.KKBus.Controller;
+package com.pz.KKBus.Controller.Schedules;
 
 import com.pz.KKBus.Manager.Schedules.KrakowToKatowiceDepartureManager;
 import com.pz.KKBus.Manager.Schedules.KrakowToKatowiceManager;
@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
-@RequestMapping("/startPage/departure")
+@RequestMapping("/krakowToKatowice/departure")
 public class KrakowToKatowiceDepartureController {
 
     private KrakowToKatowiceDepartureManager krakowToKatowiceDepartureManager;
@@ -88,6 +87,6 @@ public class KrakowToKatowiceDepartureController {
             krakowToKatowiceDepartureManager.deleteFromKrakowToKatowiceDeparture(foundKrkToKt);
             return new ResponseEntity<>(foundKrkToKt,HttpStatus.OK);
         } else
-            return new ResponseEntity<>("Not found stop to delete!", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Not found departure to delete!", HttpStatus.NOT_FOUND);
     }
 }
