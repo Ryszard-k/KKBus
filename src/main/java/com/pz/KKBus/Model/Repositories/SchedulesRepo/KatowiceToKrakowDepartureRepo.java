@@ -2,6 +2,7 @@ package com.pz.KKBus.Model.Repositories.SchedulesRepo;
 
 import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakow;
 import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakowDeparture;
+import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowiceDeparture;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +12,8 @@ import java.util.List;
 public interface KatowiceToKrakowDepartureRepo extends JpaRepository<KatowiceToKrakowDeparture, Long> {
 
     List<KatowiceToKrakowDeparture> findByKatowiceToKrakow(KatowiceToKrakow katowiceToKrakow);
+
+    KatowiceToKrakowDeparture findTopByOrderBySatSunDepartureAsc();
+
+    KatowiceToKrakowDeparture findTopByOrderByMonFriDepartureAsc();
 }

@@ -1,14 +1,13 @@
 package com.pz.KKBus.Model.Entites;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakow;
 import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 public class Reservation implements Serializable {
@@ -21,6 +20,9 @@ public class Reservation implements Serializable {
     private LocalDate date;
 
     @NotNull
+    private LocalTime time;
+
+    @NotNull
     private int seats;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -29,14 +31,23 @@ public class Reservation implements Serializable {
     private Customer customer;
 
     @Autowired
-    public Reservation(Long id, LocalDate date, int seats, Customer customer) {
+    public Reservation(Long id, LocalDate date, LocalTime time, int seats, Customer customer) {
         this.id = id;
         this.date = date;
+        this.time = time;
         this.seats = seats;
         this.customer = customer;
     }
 
     public Reservation() {
+    }
+
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
     }
 
     public Long getId() {

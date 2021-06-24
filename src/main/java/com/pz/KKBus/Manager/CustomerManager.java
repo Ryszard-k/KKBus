@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -126,6 +127,6 @@ public class CustomerManager {
                 123456789, "kowalski", passwordEncoder.encode("kowalski123"),
                 Role.CustomerEnabled, true));
 
-        reservationRepo.save(new Reservation((long) 1, LocalDate.parse("2021-03-12"), 2, findByUsername("kowalski").get()));
+        reservationRepo.save(new Reservation((long) 1, LocalDate.parse("2021-03-12"), LocalTime.parse("08:30"), 2, findByUsername("kowalski").get()));
     }
 }

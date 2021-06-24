@@ -13,4 +13,8 @@ import java.util.Optional;
 public interface KrakowToKatowiceDepartureRepo extends JpaRepository<KrakowToKatowiceDeparture, Long> {
 
     List<KrakowToKatowiceDeparture> findByKrakowToKatowice(KrakowToKatowice krakowToKatowice);
+
+    KrakowToKatowiceDeparture findTopByOrderBySatSunDepartureAsc();
+
+    KrakowToKatowiceDeparture findTopByOrderByMonFriDepartureAsc();
 }
