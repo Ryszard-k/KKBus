@@ -72,35 +72,39 @@ public class ReservationController {
             return new ResponseEntity<>("Empty input data", HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping(path = "/{fromTo}/{username}",
+    @PostMapping(path = "/{username}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<Object> addReservation(@RequestBody Reservation reservation,
-                                                 @PathVariable String username, @PathVariable String fromTo) {
+                                                 @PathVariable String username) {
         Optional<Customer> customer = customerManager.findByUsername(username);
         long difference = 0;
         if (LocalDate.now().isBefore(reservation.getDate()) || LocalDate.now().isEqual(reservation.getDate())) {
-            switch (fromTo) {
-                case "KrakowToKatowice":
+            switch (reservation.getRoute()) {
+                case KrakowToKatowice:
                     if (reservation.getDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) ||
                             reservation.getDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
-                        difference = Duration.between(LocalDate.now().atTime(LocalTime.now()), (Temporal) reservation.getDate().atTime(krakowToKatowiceDepartureRepo
-                                        .findTopByOrderBySatSunDepartureAsc().getSatSunDeparture())).toMinutes();
+                        difference = Duration.between(LocalDate.now().atTime(LocalTime.now()), reservation.getDate()
+                                .atTime(krakowToKatowiceDepartureRepo.findTopByOrderBySatSunDepartureAsc()
+                                        .getSatSunDeparture())).toMinutes();
                     } else {
-                        difference = Duration.between(LocalDate.now().atTime(LocalTime.of(10, 30)), (Temporal) reservation.getDate().atTime(krakowToKatowiceDepartureRepo
+                        difference = Duration.between(LocalDate.now().atTime(LocalTime.of(10, 30)),
+                                reservation.getDate().atTime(krakowToKatowiceDepartureRepo
                                         .findTopByOrderByMonFriDepartureAsc().getMonFriDeparture())).toMinutes();
                     }
                     break;
 
-                case "KatowiceToKrakow":
+                case KatowiceToKrakow:
                     if (reservation.getDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) ||
                             reservation.getDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
-                        difference = Duration.between(LocalDate.now().atTime(LocalTime.now()),(Temporal) reservation.getDate().atTime(katowiceToKrakowDepartureRepo
-                                        .findTopByOrderBySatSunDepartureAsc().getSatSunDeparture())).toMinutes();
+                        difference = Duration.between(LocalDate.now().atTime(LocalTime.now()), reservation.getDate()
+                                .atTime(katowiceToKrakowDepartureRepo.findTopByOrderBySatSunDepartureAsc()
+                                        .getSatSunDeparture())).toMinutes();
                     } else {
-                        difference = Duration.between(LocalDate.now().atTime(LocalTime.now()), (Temporal) reservation.getDate().atTime(katowiceToKrakowDepartureRepo
-                                        .findTopByOrderByMonFriDepartureAsc().getMonFriDeparture())).toMinutes();
+                        difference = Duration.between(LocalDate.now().atTime(LocalTime.now()), reservation.getDate()
+                                .atTime(katowiceToKrakowDepartureRepo.findTopByOrderByMonFriDepartureAsc()
+                                        .getMonFriDeparture())).toMinutes();
                     }
                     break;
 
@@ -118,6 +122,49 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteReservation(@PathVariable Long id) {
+        Optional<Reservation> foundReservation = reservationManager.findById(id);
+        long difference = 0;
+        if (LocalDate.now().isBefore(foundReservation.get().getDate())) {
+            switch (foundReservation.get().getRoute()) {
+                case KrakowToKatowice:
+                    if (foundReservation.get().getDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) ||
+                            foundReservation.get().getDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
+                        difference = Duration.between(LocalDate.now().atTime(LocalTime.now()),
+                                foundReservation.get().getDate().atTime(krakowToKatowiceDepartureRepo
+                                .findTopByOrderBySatSunDepartureAsc().getSatSunDeparture())).toMinutes();
+                    } else {
+                        difference = Duration.between(LocalDate.now().atTime(LocalTime.now()),
+                                foundReservation.get().getDate().atTime(krakowToKatowiceDepartureRepo
+                                .findTopByOrderByMonFriDepartureAsc().getMonFriDeparture())).toMinutes();
+                    }
+                    break;
+
+                case KatowiceToKrakow:
+                    if (foundReservation.get().getDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) ||
+                            foundReservation.get().getDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
+                        difference = Duration.between(LocalDate.now().atTime(LocalTime.now()),
+                                foundReservation.get().getDate().atTime(katowiceToKrakowDepartureRepo
+                                .findTopByOrderBySatSunDepartureAsc().getSatSunDeparture())).toMinutes();
+                    } else {
+                        difference = Duration.between(LocalDate.now().atTime(LocalTime.now()),
+                                foundReservation.get().getDate().atTime(katowiceToKrakowDepartureRepo
+                                .findTopByOrderByMonFriDepartureAsc().getMonFriDeparture())).toMinutes();
+                    }
+                    break;
+
+                default:
+                    return new ResponseEntity<>("Bad trace", HttpStatus.BAD_REQUEST);
+            }
+        if (foundReservation.isPresent() && difference > 1440) {
+            reservationManager.deleteById(id);
+            return new ResponseEntity<>(foundReservation,HttpStatus.OK);
+        } else
+            return new ResponseEntity<>("Not found departure to delete!", HttpStatus.NOT_FOUND);
+        } else return new ResponseEntity<>("Not permission to canceling reservation", HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping("/for-admin/{id}")
+    public ResponseEntity<Object> deleteReservationAdmin(@PathVariable Long id) {
         Optional<Reservation> foundReservation = reservationManager.findById(id);
         if (foundReservation.isPresent()) {
             reservationManager.deleteById(id);

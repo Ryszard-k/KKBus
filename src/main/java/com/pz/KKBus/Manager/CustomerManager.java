@@ -7,6 +7,7 @@ import com.pz.KKBus.Model.Entites.Customer;
 import com.pz.KKBus.Model.Repositories.ReservationRepo;
 import com.pz.KKBus.Model.Repositories.TokenRepo;
 import com.pz.KKBus.Model.Role;
+import com.pz.KKBus.Model.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -127,6 +128,7 @@ public class CustomerManager {
                 123456789, "kowalski", passwordEncoder.encode("kowalski123"),
                 Role.CustomerEnabled, true));
 
-        reservationRepo.save(new Reservation((long) 1, LocalDate.parse("2021-03-12"), LocalTime.parse("08:30"), 2, findByUsername("kowalski").get()));
+        reservationRepo.save(new Reservation((long) 1, LocalDate.parse("2021-07-12"), LocalTime.parse("08:30"), 2,
+                Route.KrakowToKatowice, "przystanek1", "przystanek3", findByUsername("kowalski").get()));
     }
 }
