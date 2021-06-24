@@ -1,8 +1,10 @@
 package com.pz.KKBus.Manager;
 
+import com.pz.KKBus.Model.Entites.Reservation;
 import com.pz.KKBus.Model.Entites.Token;
 import com.pz.KKBus.Model.Repositories.CustomerRepo;
 import com.pz.KKBus.Model.Entites.Customer;
+import com.pz.KKBus.Model.Repositories.ReservationRepo;
 import com.pz.KKBus.Model.Repositories.TokenRepo;
 import com.pz.KKBus.Model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,21 +25,23 @@ public class CustomerManager {
     private PasswordEncoder passwordEncoder;
     private TokenRepo tokenRepo;
     private MailManager mailManager;
+    private ReservationRepo reservationRepo;
 
     @Autowired
-    public CustomerManager(CustomerRepo customerRepo, PasswordEncoder passwordEncoder, TokenRepo tokenRepo, MailManager mailManager) {
+    public CustomerManager(CustomerRepo customerRepo, PasswordEncoder passwordEncoder, TokenRepo tokenRepo, MailManager mailManager, ReservationRepo reservationRepo) {
         this.customerRepo = customerRepo;
         this.passwordEncoder = passwordEncoder;
         this.tokenRepo = tokenRepo;
         this.mailManager = mailManager;
+        this.reservationRepo = reservationRepo;
     }
 
     public Iterable<Customer> findAll(){
         return customerRepo.findAll();
     }
 
-    public Optional<Customer> findByLastName(String lastName){
-        return customerRepo.findByLastName(lastName);
+    public Optional<Customer> findByUsername(String username){
+        return customerRepo.findByUsername(username);
     }
 
     public Optional<Customer> findById(Long id){
@@ -121,5 +125,7 @@ public class CustomerManager {
         customerRepo.save(new Customer((long) 1, "Marek", "Kowalski", LocalDate.parse("1983-02-23"), "kowalski@gmail.com",
                 123456789, "kowalski", passwordEncoder.encode("kowalski123"),
                 Role.CustomerEnabled, true));
+
+        reservationRepo.save(new Reservation((long) 1, LocalDate.parse("2021-03-12"), 2, findByUsername("kowalski").get()));
     }
 }

@@ -1,5 +1,6 @@
 package com.pz.KKBus.Model.Entites;
 
+import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakowDeparture;
 import com.pz.KKBus.Model.Role;
 import com.sun.istack.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,7 +15,7 @@ import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "Customer")
@@ -49,6 +50,11 @@ public class Customer implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
     private boolean isEnabled;
+    private boolean discount;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Reservation> reservations;
 
     public Customer(Long id, String firstName, String lastName, LocalDate birthDate, @Email String email,
                     Integer phoneNumber, String username, String password, Role role, boolean isEnabled) {
@@ -62,9 +68,18 @@ public class Customer implements UserDetails {
         this.password = password;
         this.role = role;
         this.isEnabled = isEnabled;
+        this.discount = discount;
     }
 
     public Customer() {
+    }
+
+    public boolean isDiscount() {
+        return false;
+    }
+
+    public void setDiscount(boolean discount) {
+        this.discount = discount;
     }
 
     public void setEnabled(boolean enabled) {
@@ -168,4 +183,11 @@ public class Customer implements UserDetails {
         this.password = password;
     }
 
+    public Set<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(Set<Reservation> reservations) {
+        this.reservations = reservations;
+    }
 }

@@ -1,12 +1,17 @@
 package com.pz.KKBus.Manager.Schedules;
 
+import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakow;
+import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakowDeparture;
 import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowice;
 import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowiceDeparture;
 import com.pz.KKBus.Model.Repositories.SchedulesRepo.KrakowToKatowiceDepartureRepo;
 import com.pz.KKBus.Model.Repositories.SchedulesRepo.KrakowToKatowiceRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,5 +67,30 @@ public class KrakowToKatowiceManager {
     public Optional<KrakowToKatowice> deleteFromKrakowToKatowice(Optional<KrakowToKatowice> krakowToKatowice){
         krakowToKatowiceRepo.delete(krakowToKatowice.get());
         return krakowToKatowice;
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void fillKrakowToKatowice() {
+        krakowToKatowiceRepo.save(new KrakowToKatowice((long) 1, "Przystanek1", null
+                , 0, 0));
+        krakowToKatowiceRepo.save(new KrakowToKatowice((long) 2, "Przystanek2", null
+                , 10, 40));
+        krakowToKatowiceRepo.save(new KrakowToKatowice((long) 3, "Przystanek3", null
+                , 17, 80));
+
+        krakowToKatowiceDepartureRepo.save(new KrakowToKatowiceDeparture((long) 1, LocalTime.parse("08:01"),
+                LocalTime.parse("11:47"), findByIdFromKrakowToKatowice(1L).get()));
+        krakowToKatowiceDepartureRepo.save(new KrakowToKatowiceDeparture((long) 2, LocalTime.parse("13:01"),
+                LocalTime.parse("16:47"), findByIdFromKrakowToKatowice(1L).get()));
+
+        krakowToKatowiceDepartureRepo.save(new KrakowToKatowiceDeparture((long) 3, LocalTime.parse("08:30"),
+                LocalTime.parse("11:47"), findByIdFromKrakowToKatowice(2L).get()));
+        krakowToKatowiceDepartureRepo.save(new KrakowToKatowiceDeparture((long) 4, LocalTime.parse("13:51"),
+                LocalTime.parse("17:47"), findByIdFromKrakowToKatowice(2L).get()));
+
+        krakowToKatowiceDepartureRepo.save(new KrakowToKatowiceDeparture((long) 5, LocalTime.parse("08:01"),
+                LocalTime.parse("09:47"), findByIdFromKrakowToKatowice(3L).get()));
+        krakowToKatowiceDepartureRepo.save(new KrakowToKatowiceDeparture((long) 6, LocalTime.parse("13:01"),
+                LocalTime.parse("16:47"), findByIdFromKrakowToKatowice(3L).get()));
     }
 }
