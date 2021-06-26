@@ -1,11 +1,10 @@
 package com.pz.KKBus.Controller.Schedules;
 
+import com.pz.KKBus.Manager.ReservationManager;
 import com.pz.KKBus.Manager.Schedules.KatowiceToKrakowDepartureManager;
 import com.pz.KKBus.Manager.Schedules.KatowiceToKrakowManager;
 import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakow;
 import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakowDeparture;
-import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowice;
-import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowiceDeparture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,11 +20,13 @@ public class KatowiceToKrakowDepartureController {
 
     private KatowiceToKrakowManager katowiceToKrakowManager;
     private KatowiceToKrakowDepartureManager katowiceToKrakowDepartureManager;
+    private ReservationManager reservationManager;
 
     @Autowired
-    public KatowiceToKrakowDepartureController(KatowiceToKrakowManager katowiceToKrakowManager, KatowiceToKrakowDepartureManager katowiceToKrakowDepartureManager) {
+    public KatowiceToKrakowDepartureController(KatowiceToKrakowManager katowiceToKrakowManager, KatowiceToKrakowDepartureManager katowiceToKrakowDepartureManager, ReservationManager reservationManager) {
         this.katowiceToKrakowManager = katowiceToKrakowManager;
         this.katowiceToKrakowDepartureManager = katowiceToKrakowDepartureManager;
+        this.reservationManager = reservationManager;
     }
 
     @GetMapping
@@ -77,6 +78,8 @@ public class KatowiceToKrakowDepartureController {
         } else {
             katowiceToKrakowDepartureManager.updateToKatowiceToKrakowDeparture(katowiceToKrakowDeparture,
                     id, foundKrkToKt.get());
+            reservationManager.notificationsForCustomers(foundKrkToKt, "Departures for ",
+                    " have been changed, pleas check Your reservation");
             return new ResponseEntity(katowiceToKrakowDeparture, HttpStatus.OK);
         }
     }
@@ -87,6 +90,8 @@ public class KatowiceToKrakowDepartureController {
                 .findByIdFromKatowiceToKrakowDeparture(id);
         if (foundKrkToKt.isPresent()) {
             katowiceToKrakowDepartureManager.deleteFromKatowiceToKrakowDeparture(foundKrkToKt);
+            reservationManager.notificationsForCustomers(Optional.ofNullable(foundKrkToKt.get().getKatowiceToKrakow()),
+                    "Departures for ", " have been canceled, pleas check Your reservation");
             return new ResponseEntity<>(foundKrkToKt,HttpStatus.OK);
         } else
             return new ResponseEntity<>("Not found departure to delete!", HttpStatus.NOT_FOUND);

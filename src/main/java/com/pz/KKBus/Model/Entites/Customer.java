@@ -68,7 +68,6 @@ public class Customer implements UserDetails {
         this.password = password;
         this.role = role;
         this.isEnabled = isEnabled;
-        this.discount = discount;
     }
 
     public Customer() {

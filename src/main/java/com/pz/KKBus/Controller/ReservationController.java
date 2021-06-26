@@ -1,6 +1,7 @@
 package com.pz.KKBus.Controller;
 
 import com.pz.KKBus.Manager.CustomerManager;
+import com.pz.KKBus.Manager.MailManager;
 import com.pz.KKBus.Manager.ReservationManager;
 import com.pz.KKBus.Model.Entites.Customer;
 import com.pz.KKBus.Model.Entites.Reservation;
@@ -12,11 +13,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.temporal.Temporal;
 import java.util.Optional;
 
 @RestController
@@ -27,26 +28,28 @@ public class ReservationController {
     private CustomerManager customerManager;
     private KatowiceToKrakowDepartureRepo katowiceToKrakowDepartureRepo;
     private KrakowToKatowiceDepartureRepo krakowToKatowiceDepartureRepo;
+    private MailManager mailManager;
 
     @Autowired
-    public ReservationController(ReservationManager reservationManager, CustomerManager customerManager, KatowiceToKrakowDepartureRepo katowiceToKrakowDepartureRepo, KrakowToKatowiceDepartureRepo krakowToKatowiceDepartureRepo) {
+    public ReservationController(ReservationManager reservationManager, CustomerManager customerManager, KatowiceToKrakowDepartureRepo katowiceToKrakowDepartureRepo, KrakowToKatowiceDepartureRepo krakowToKatowiceDepartureRepo, MailManager mailManager) {
         this.reservationManager = reservationManager;
         this.customerManager = customerManager;
         this.katowiceToKrakowDepartureRepo = katowiceToKrakowDepartureRepo;
         this.krakowToKatowiceDepartureRepo = krakowToKatowiceDepartureRepo;
+        this.mailManager = mailManager;
     }
 
     @GetMapping()
     public ResponseEntity getEmployees(){
-        Iterable<Reservation> foundEmployees = reservationManager.findAll();
+        Iterable<Reservation> foundReservation = reservationManager.findAll();
         int iterations = 0;
-        for (Reservation reservation: foundEmployees) {
+        for (Reservation reservation: foundReservation) {
             iterations++;
         }
         if(iterations == 0){
             return new ResponseEntity<>("Repository is empty!", HttpStatus.NOT_FOUND);
         } else
-            return new ResponseEntity<>(foundEmployees, HttpStatus.OK);
+            return new ResponseEntity<>(foundReservation, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -67,6 +70,12 @@ public class ReservationController {
         Optional<Customer> customer = customerManager.findByUsername(username);
         if (reservation != null && customer != null) {
             reservationManager.save(reservation, customer);
+            try {
+                mailManager.sendMail(customer.get().getEmail(), "Reservation", "You have new reservation on: "
+                        + reservation.getDate() + " added by our team", false);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
             return new ResponseEntity<>(reservation, HttpStatus.CREATED);
         } else
             return new ResponseEntity<>("Empty input data", HttpStatus.BAD_REQUEST);
@@ -80,7 +89,8 @@ public class ReservationController {
                                                  @PathVariable String username) {
         Optional<Customer> customer = customerManager.findByUsername(username);
         long difference = 0;
-        if (LocalDate.now().isBefore(reservation.getDate()) || LocalDate.now().isEqual(reservation.getDate())) {
+        if ((LocalDate.now().isBefore(reservation.getDate()) || LocalDate.now().isEqual(reservation.getDate())) &&
+                reservation.getDate().isBefore(LocalDate.now().plusDays(7))) {
             switch (reservation.getRoute()) {
                 case KrakowToKatowice:
                     if (reservation.getDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) ||
@@ -114,6 +124,12 @@ public class ReservationController {
 
             if (reservation != null && customer != null && difference > 120) {
                 reservationManager.save(reservation, customer);
+                try {
+                    mailManager.sendMail(customer.get().getEmail(), "Reservation",
+                            "Your reservation on: " + reservation.getDate() + " has been saved", false);
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
                 return new ResponseEntity<>(reservation, HttpStatus.CREATED);
             } else
                 return new ResponseEntity<>("Empty input data or bad time", HttpStatus.BAD_REQUEST);
@@ -157,6 +173,12 @@ public class ReservationController {
             }
         if (foundReservation.isPresent() && difference > 1440) {
             reservationManager.deleteById(id);
+            try {
+                mailManager.sendMail(foundReservation.get().getCustomer().getEmail(), "Reservation",
+                        "Your reservation on: " + foundReservation.get().getDate() + " has been canceled", false);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
             return new ResponseEntity<>(foundReservation,HttpStatus.OK);
         } else
             return new ResponseEntity<>("Not found departure to delete!", HttpStatus.NOT_FOUND);
@@ -168,6 +190,13 @@ public class ReservationController {
         Optional<Reservation> foundReservation = reservationManager.findById(id);
         if (foundReservation.isPresent()) {
             reservationManager.deleteById(id);
+            try {
+                mailManager.sendMail(foundReservation.get().getCustomer().getEmail(), "Reservation",
+                        "Your reservation on: " + foundReservation.get().getDate() + " has been canceled by our team", false);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+
             return new ResponseEntity<>(foundReservation,HttpStatus.OK);
         } else
             return new ResponseEntity<>("Not found departure to delete!", HttpStatus.NOT_FOUND);

@@ -114,7 +114,7 @@ public class CustomerManager {
         tokenRepo.save(token);
         String url = "http://localhost:8080/token?value=" + tokenValue;
         try {
-            mailManager.sendMail(customer.getEmail(), "Potwierdzenie konta", url + "\n" + "Username: " +
+            mailManager.sendMail(customer.getEmail(), "Confirm your account", url + "\n" + "Username: " +
                             customer.getUsername(), false);
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -124,11 +124,11 @@ public class CustomerManager {
 
     @EventListener(ApplicationReadyEvent.class)
     public void fillCustomer(){
-        customerRepo.save(new Customer((long) 1, "Marek", "Kowalski", LocalDate.parse("1983-02-23"), "kowalski@gmail.com",
+        customerRepo.save(new Customer((long) 1, "Marek", "Kowalski", LocalDate.parse("1983-02-23"), "piotr.wojcik543@gmail.com",
                 123456789, "kowalski", passwordEncoder.encode("kowalski123"),
                 Role.CustomerEnabled, true));
 
-        reservationRepo.save(new Reservation((long) 1, LocalDate.parse("2021-07-12"), LocalTime.parse("08:30"), 2,
-                Route.KrakowToKatowice, "przystanek1", "przystanek3", findByUsername("kowalski").get()));
+        reservationRepo.save(new Reservation((long) 1, LocalDate.parse("2021-06-26"), LocalTime.parse("08:30"), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek3", findByUsername("kowalski").get()));
     }
 }

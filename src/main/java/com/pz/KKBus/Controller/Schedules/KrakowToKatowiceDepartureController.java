@@ -1,5 +1,6 @@
 package com.pz.KKBus.Controller.Schedules;
 
+import com.pz.KKBus.Manager.ReservationManager;
 import com.pz.KKBus.Manager.Schedules.KrakowToKatowiceDepartureManager;
 import com.pz.KKBus.Manager.Schedules.KrakowToKatowiceManager;
 import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowice;
@@ -19,11 +20,13 @@ public class KrakowToKatowiceDepartureController {
 
     private KrakowToKatowiceDepartureManager krakowToKatowiceDepartureManager;
     private KrakowToKatowiceManager krakowToKatowiceManager;
+    private ReservationManager reservationManager;
 
     @Autowired
-    public KrakowToKatowiceDepartureController(KrakowToKatowiceDepartureManager krakowToKatowiceDepartureManager, KrakowToKatowiceManager krakowToKatowiceManager) {
+    public KrakowToKatowiceDepartureController(KrakowToKatowiceDepartureManager krakowToKatowiceDepartureManager, KrakowToKatowiceManager krakowToKatowiceManager, ReservationManager reservationManager) {
         this.krakowToKatowiceDepartureManager = krakowToKatowiceDepartureManager;
         this.krakowToKatowiceManager = krakowToKatowiceManager;
+        this.reservationManager = reservationManager;
     }
 
     @GetMapping
@@ -75,6 +78,8 @@ public class KrakowToKatowiceDepartureController {
         } else {
             krakowToKatowiceDepartureManager.updateToKrakowToKatowiceDeparture(krakowToKatowiceDeparture,
                     id, foundKrkToKt.get());
+            reservationManager.notificationsForCustomersKrkToKt(foundKrkToKt, "Departures for ",
+                    " have been changed, pleas check Your reservation");
             return new ResponseEntity(krakowToKatowiceDeparture, HttpStatus.OK);
         }
     }
@@ -85,6 +90,9 @@ public class KrakowToKatowiceDepartureController {
                 .findByIdFromKrakowToKatowiceDeparture(id);
         if (foundKrkToKt.isPresent()) {
             krakowToKatowiceDepartureManager.deleteFromKrakowToKatowiceDeparture(foundKrkToKt);
+            reservationManager.notificationsForCustomersKrkToKt(Optional.ofNullable(foundKrkToKt.get()
+                            .getKrakowToKatowice()), "Departures for ",
+                    " have been canceled, pleas check Your reservation");
             return new ResponseEntity<>(foundKrkToKt,HttpStatus.OK);
         } else
             return new ResponseEntity<>("Not found departure to delete!", HttpStatus.NOT_FOUND);

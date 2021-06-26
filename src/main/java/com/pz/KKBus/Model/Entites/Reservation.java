@@ -36,10 +36,12 @@ public class Reservation implements Serializable {
     @NotNull
     private String toStop;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
     @JsonIgnore
     private Customer customer;
+
+    private boolean confirm;
 
     @Autowired
     public Reservation(Long id, LocalDate date, LocalTime time, int seats, Route route, String fromStop, String toStop, Customer customer) {
@@ -54,6 +56,30 @@ public class Reservation implements Serializable {
     }
 
     public Reservation() {
+    }
+
+    public String getFromStop() {
+        return fromStop;
+    }
+
+    public void setFromStop(String fromStop) {
+        this.fromStop = fromStop;
+    }
+
+    public String getToStop() {
+        return toStop;
+    }
+
+    public void setToStop(String toStop) {
+        this.toStop = toStop;
+    }
+
+    public boolean isConfirm() {
+        return false;
+    }
+
+    public void setConfirm(boolean confirm) {
+        this.confirm = confirm;
     }
 
     public Long getId() {
