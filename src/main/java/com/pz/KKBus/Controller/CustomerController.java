@@ -6,7 +6,7 @@ import com.pz.KKBus.Model.Entites.Customer;
 import com.pz.KKBus.Model.Entites.Token;
 import com.pz.KKBus.Model.Repositories.CustomerRepo;
 import com.pz.KKBus.Model.Repositories.TokenRepo;
-import com.pz.KKBus.Model.Role;
+import com.pz.KKBus.Model.Enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

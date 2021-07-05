@@ -90,7 +90,8 @@ public class ReservationController {
         Optional<Customer> customer = customerManager.findByUsername(username);
         long difference = 0;
         if ((LocalDate.now().isBefore(reservation.getDate()) || LocalDate.now().isEqual(reservation.getDate())) &&
-                reservation.getDate().isBefore(LocalDate.now().plusDays(7))) {
+                reservation.getDate().isBefore(LocalDate.now().plusDays(7)) &&
+                reservationManager.enableReservation() == true) {
             switch (reservation.getRoute()) {
                 case KrakowToKatowice:
                     if (reservation.getDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) ||

@@ -1,7 +1,6 @@
 package com.pz.KKBus.Model.Entites;
 
-import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakowDeparture;
-import com.pz.KKBus.Model.Role;
+import com.pz.KKBus.Model.Enums.Role;
 import com.sun.istack.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +14,7 @@ import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -189,4 +189,5 @@ public class Customer implements UserDetails {
     public void setReservations(Set<Reservation> reservations) {
         this.reservations = reservations;
     }
+
 }

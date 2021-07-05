@@ -1,4 +1,4 @@
-package com.pz.KKBus.Model;
+package com.pz.KKBus.Model.Enums;
 
 public enum Role {
     Admin(),

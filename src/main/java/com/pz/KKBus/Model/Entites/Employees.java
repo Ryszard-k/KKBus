@@ -1,8 +1,6 @@
 package com.pz.KKBus.Model.Entites;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.pz.KKBus.Model.Role;
+import com.pz.KKBus.Model.Enums.Role;
 
 import javax.persistence.*;
 import java.time.LocalDate;

@@ -2,7 +2,7 @@ package com.pz.KKBus.Manager;
 
 import com.pz.KKBus.Model.Repositories.EmployeesRepo;
 import com.pz.KKBus.Model.Entites.Employees;
-import com.pz.KKBus.Model.Role;
+import com.pz.KKBus.Model.Enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;

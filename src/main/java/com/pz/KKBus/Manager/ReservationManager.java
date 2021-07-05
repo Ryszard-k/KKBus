@@ -4,11 +4,15 @@ import com.pz.KKBus.Model.Entites.Customer;
 import com.pz.KKBus.Model.Entites.Reservation;
 import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakow;
 import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowice;
+import com.pz.KKBus.Model.Enums.Status;
 import com.pz.KKBus.Model.Repositories.ReservationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,13 +20,11 @@ public class ReservationManager {
 
     private ReservationRepo reservationRepo;
     private MailManager mailManager;
-    private CustomerManager customerManager;
 
     @Autowired
     public ReservationManager(ReservationRepo reservationRepo, MailManager mailManager, CustomerManager customerManager) {
         this.reservationRepo = reservationRepo;
         this.mailManager = mailManager;
-        this.customerManager = customerManager;
     }
 
     public Iterable<Reservation> findAll(){
@@ -35,6 +37,7 @@ public class ReservationManager {
 
     public Reservation save(Reservation reservation, Optional<Customer> customer){
         reservation.setCustomer(customer.get());
+        reservation.setStatus(Status.Created);
         return reservationRepo.save(reservation);
     }
 
@@ -75,4 +78,25 @@ public class ReservationManager {
         return;
     }
 
+    public boolean enableReservation(){
+        int countConfirm = reservationRepo.countByStatus(Status.Unrealized);
+        if(countConfirm % 3 == 0){
+            List<Reservation> foundReservation = reservationRepo.findByStatus(Status.Unrealized);
+            foundReservation.sort(Comparator.comparing(Reservation::getDate));
+            if (foundReservation.get(2).getDate().plusMonths(2).isEqual(LocalDate.now())){
+                for (Reservation reservation : foundReservation) {
+                    reservation.setStatus(Status.ArchiveUnrealized);
+                    reservationRepo.save(reservation);
+                }
+                return true;
+            } else
+            try {
+                mailManager.sendMail(foundReservation.get(2).getCustomer().getEmail(), "Reservation",
+                        "Your possibility of booking is blocked to " + foundReservation.get(2).getDate(), false);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+            return false;
+        } else return true;
+    }
 }

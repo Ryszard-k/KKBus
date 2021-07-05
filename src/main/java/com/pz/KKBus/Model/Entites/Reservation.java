@@ -1,7 +1,8 @@
 package com.pz.KKBus.Model.Entites;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pz.KKBus.Model.Route;
+import com.pz.KKBus.Model.Enums.Route;
+import com.pz.KKBus.Model.Enums.Status;
 import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -41,10 +42,11 @@ public class Reservation implements Serializable {
     @JsonIgnore
     private Customer customer;
 
-    private boolean confirm;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Autowired
-    public Reservation(Long id, LocalDate date, LocalTime time, int seats, Route route, String fromStop, String toStop, Customer customer) {
+    public Reservation(Long id, LocalDate date, LocalTime time, int seats, Route route, String fromStop, String toStop, Customer customer, Status status) {
         this.id = id;
         this.date = date;
         this.time = time;
@@ -53,9 +55,18 @@ public class Reservation implements Serializable {
         this.fromStop = fromStop;
         this.toStop = toStop;
         this.customer = customer;
+        this.status = status;
     }
 
     public Reservation() {
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public String getFromStop() {
@@ -72,14 +83,6 @@ public class Reservation implements Serializable {
 
     public void setToStop(String toStop) {
         this.toStop = toStop;
-    }
-
-    public boolean isConfirm() {
-        return false;
-    }
-
-    public void setConfirm(boolean confirm) {
-        this.confirm = confirm;
     }
 
     public Long getId() {
@@ -145,4 +148,6 @@ public class Reservation implements Serializable {
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
+
+
 }
