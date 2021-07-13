@@ -24,11 +24,11 @@ import java.util.Optional;
 @RequestMapping("/reservation")
 public class ReservationController {
 
-    private ReservationManager reservationManager;
-    private CustomerManager customerManager;
-    private KatowiceToKrakowDepartureRepo katowiceToKrakowDepartureRepo;
-    private KrakowToKatowiceDepartureRepo krakowToKatowiceDepartureRepo;
-    private MailManager mailManager;
+    private final ReservationManager reservationManager;
+    private final CustomerManager customerManager;
+    private final KatowiceToKrakowDepartureRepo katowiceToKrakowDepartureRepo;
+    private final KrakowToKatowiceDepartureRepo krakowToKatowiceDepartureRepo;
+    private final MailManager mailManager;
 
     @Autowired
     public ReservationController(ReservationManager reservationManager, CustomerManager customerManager, KatowiceToKrakowDepartureRepo katowiceToKrakowDepartureRepo, KrakowToKatowiceDepartureRepo krakowToKatowiceDepartureRepo, MailManager mailManager) {
@@ -91,7 +91,7 @@ public class ReservationController {
         long difference = 0;
         if ((LocalDate.now().isBefore(reservation.getDate()) || LocalDate.now().isEqual(reservation.getDate())) &&
                 reservation.getDate().isBefore(LocalDate.now().plusDays(7)) &&
-                reservationManager.enableReservation() == true) {
+                reservationManager.enableReservation(customer)) {
             switch (reservation.getRoute()) {
                 case KrakowToKatowice:
                     if (reservation.getDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) ||

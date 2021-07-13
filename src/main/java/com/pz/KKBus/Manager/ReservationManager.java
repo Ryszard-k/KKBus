@@ -18,11 +18,11 @@ import java.util.Optional;
 @Service
 public class ReservationManager {
 
-    private ReservationRepo reservationRepo;
-    private MailManager mailManager;
+    private final ReservationRepo reservationRepo;
+    private final MailManager mailManager;
 
     @Autowired
-    public ReservationManager(ReservationRepo reservationRepo, MailManager mailManager, CustomerManager customerManager) {
+    public ReservationManager(ReservationRepo reservationRepo, MailManager mailManager) {
         this.reservationRepo = reservationRepo;
         this.mailManager = mailManager;
     }
@@ -36,9 +36,9 @@ public class ReservationManager {
     }
 
     public Reservation save(Reservation reservation, Optional<Customer> customer){
-        reservation.setCustomer(customer.get());
-        reservation.setStatus(Status.Created);
-        return reservationRepo.save(reservation);
+            reservation.setCustomer(customer.get());
+            reservation.setStatus(Status.Created);
+            return reservationRepo.save(reservation);
     }
 
     public Optional<Reservation> deleteById(Long id){
@@ -60,7 +60,6 @@ public class ReservationManager {
                 }
             }
         }
-        return;
     }
 
     public void notificationsForCustomersKrkToKt(Optional<KrakowToKatowice> stop, String textPart1, String textPart2){
@@ -75,15 +74,15 @@ public class ReservationManager {
                 }
             }
         }
-        return;
     }
 
-    public boolean enableReservation(){
-        int countConfirm = reservationRepo.countByStatus(Status.Unrealized);
-        if(countConfirm % 3 == 0){
+    public boolean enableReservation(Optional<Customer> customer){
+        int countConfirm = reservationRepo.countByStatusAndCustomer(Status.Unrealized, customer);
+        if(countConfirm == 3){
             List<Reservation> foundReservation = reservationRepo.findByStatus(Status.Unrealized);
             foundReservation.sort(Comparator.comparing(Reservation::getDate));
-            if (foundReservation.get(2).getDate().plusMonths(2).isEqual(LocalDate.now())){
+            if (foundReservation.get(2).getDate().plusMonths(2).isEqual(LocalDate.now()) ||
+                    foundReservation.get(2).getDate().plusMonths(2).isBefore(LocalDate.now())){
                 for (Reservation reservation : foundReservation) {
                     reservation.setStatus(Status.ArchiveUnrealized);
                     reservationRepo.save(reservation);

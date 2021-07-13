@@ -130,6 +130,8 @@ public class CustomerManager {
                 Role.CustomerEnabled, true));
 
         reservationRepo.save(new Reservation((long) 1, LocalDate.parse("2021-06-28"), LocalTime.parse("08:30"), 2,
-                Route.KrakowToKatowice, "Przystanek1", "Przystanek3", findByUsername("kowalski").get(), Status.Created));
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek3", findByUsername("kowalski").get(), Status.Unrealized));
+
     }
+
 }

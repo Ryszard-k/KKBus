@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
 
 @Entity
 public class Reservation implements Serializable {
@@ -148,6 +149,5 @@ public class Reservation implements Serializable {
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
-
 
 }

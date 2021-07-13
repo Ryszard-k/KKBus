@@ -2,6 +2,8 @@ package com.pz.KKBus.Manager;
 
 import com.pz.KKBus.Model.Entites.Customer;
 import com.pz.KKBus.Model.Entites.Reservation;
+import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakow;
+import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowice;
 import com.pz.KKBus.Model.Enums.Role;
 import com.pz.KKBus.Model.Enums.Route;
 import com.pz.KKBus.Model.Enums.Status;
@@ -14,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.mail.MessagingException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -28,6 +31,9 @@ class ReservationManagerTest {
 
     @Mock
     private ReservationRepo reservationRepo;
+
+    @Mock
+    private MailManager mailManager;
 
     @InjectMocks
     private ReservationManager reservationManager;
@@ -82,7 +88,7 @@ class ReservationManagerTest {
 
     @Test
     void findById() {
-        when(reservationRepo.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(reservationsList().get(0)));
+        when(reservationRepo.findById(1L)).thenReturn(java.util.Optional.ofNullable(reservationsList().get(0)));
 
         Optional<Reservation> reservations2 = reservationManager.findById(1L);
 
@@ -119,18 +125,189 @@ class ReservationManagerTest {
     }
 
     @Test
+    void save_with_null_reservation() {
+        when(reservationRepo.save(null)).thenThrow(NullPointerException.class);
+
+        assertThrows(NullPointerException.class, () -> reservationManager.save(null,
+                Optional.ofNullable(customerList().get(0))));
+    }
+
+    @Test
+    void save_with_null_customer() {
+        Reservation reservation = new Reservation((long) 4, LocalDate.parse("2021-06-28"), LocalTime.parse("07:30"), 2,
+                Route.KrakowToKatowice, "Przystanek2", "Przystanek4", null, Status.Unrealized);
+
+        when(reservationRepo.save(null)).thenThrow(NullPointerException.class);
+
+        assertThrows(NullPointerException.class, () -> reservationManager.save(reservation,
+                null));
+    }
+
+    @Test
+    void save_with_null_parameters() {
+        when(reservationRepo.save(null)).thenThrow(NullPointerException.class);
+
+        assertThrows(NullPointerException.class, () -> reservationManager.save(null,
+                null));
+    }
+
+    @Test
     void deleteById() {
+        when(reservationRepo.findById(1L)).thenReturn(Optional.ofNullable(reservationsList().get(0)));
+
+        Optional<Reservation> reservations2 = reservationManager.deleteById(1L);
+
+        assertEquals(reservationsList().get(0).getId(), reservations2.get().getId());
+        assertEquals(reservationsList().get(0).getDate(), reservations2.get().getDate());
+        assertEquals(reservationsList().get(0).getCustomer().getFirstName(), reservations2.get().getCustomer().getFirstName());
+
+        verify(reservationRepo, times(1)).findById(1L);
+        verify(reservationRepo, times(1)).deleteById(1L);
     }
 
     @Test
-    void notificationsForCustomers() {
+    void deleteById_not_found_id() {
+        when(reservationRepo.findById(1L)).thenReturn(isNull());
+
+        Optional<Reservation> reservations2 = reservationManager.deleteById(1L);
+
+        assertNull(reservations2);
+        verify(reservationRepo, times(1)).findById(1L);
+        verify(reservationRepo, times(1)).deleteById(1L);
     }
 
     @Test
-    void notificationsForCustomersKrkToKt() {
+    void notificationsForCustomers() throws MessagingException {
+        KatowiceToKrakow stop = new KatowiceToKrakow((long) 2,"Przystanek2",
+                null, 7, 32);
+
+        when(reservationRepo.findAll()).thenReturn(reservationsList());
+
+        reservationManager.notificationsForCustomers(Optional.of(stop), "part1", "part2");
+
+        verify(mailManager, times(1)).sendMail(anyString(),
+                anyString(), anyString(), eq(false));
     }
 
     @Test
-    void enableReservation() {
+    void notificationsForCustomers_with_null_reservations() {
+        KatowiceToKrakow stop = new KatowiceToKrakow((long) 2,"Przystanek2",
+                null, 7, 32);
+
+        when(reservationRepo.findAll()).thenReturn(null).thenThrow(NullPointerException.class);
+
+        assertThrows(NullPointerException.class, () -> reservationManager.notificationsForCustomers(Optional.of(stop),
+                "part1", "part2"));
+        verifyNoInteractions(mailManager);
+    }
+
+    @Test
+    void notificationsForCustomers_with_null_field_reservations() {
+
+        when(reservationRepo.findAll()).thenReturn(reservationsList());
+
+        assertThrows(NullPointerException.class, () -> reservationManager.notificationsForCustomers(null,
+                "part1", "part2"));
+        verifyNoInteractions(mailManager);
+    }
+
+    @Test
+    void notificationsForCustomersKrkToKt() throws MessagingException {
+        KrakowToKatowice stop = new KrakowToKatowice((long) 2, "Przystanek2", null
+                , 10, 40);
+
+        when(reservationRepo.findAll()).thenReturn(reservationsList());
+
+        reservationManager.notificationsForCustomersKrkToKt(Optional.of(stop), "part1", "part2");
+
+        verify(mailManager, times(1)).sendMail(anyString(),
+                anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void notificationsForCustomersKrkToKt_with_null_reservations() {
+        KrakowToKatowice stop = new KrakowToKatowice((long) 2, "Przystanek2", null
+                , 10, 40);
+
+        when(reservationRepo.findAll()).thenReturn(null).thenThrow(NullPointerException.class);
+
+        assertThrows(NullPointerException.class, () -> reservationManager.notificationsForCustomersKrkToKt(Optional.of(stop),
+                "part1", "part2"));
+        verifyNoInteractions(mailManager);
+    }
+
+    @Test
+    void notificationsForCustomersKrkToKt_with_null_field_reservations() {
+        when(reservationRepo.findAll()).thenReturn(reservationsList());
+
+        assertThrows(NullPointerException.class, () -> reservationManager.notificationsForCustomers(null,
+                "part1", "part2"));
+        verifyNoInteractions(mailManager);
+    }
+
+    @Test
+    void enableReservation_shouldReturnTrueWithNothingToDo() {
+        when(reservationRepo.countByStatusAndCustomer(Status.Unrealized ,
+                Optional.of(customerList().get(0)))).thenReturn(1);
+        when(reservationRepo.findByStatus(Status.Unrealized)).thenReturn(reservationsList());
+
+        assertTrue(reservationManager.enableReservation(Optional.of(customerList().get(0))));
+        verify(reservationRepo, times(0)).findByStatus(Status.Unrealized);
+        verify(reservationRepo, times(0)).save(any());
+        verifyNoInteractions(mailManager);
+    }
+
+    @Test
+    void enableReservation_shouldReturnTrue_saveToDB() {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        List<Reservation> reservations = new ArrayList<>();
+        reservations.add(new Reservation((long) 1, LocalDate.parse("2020-06-26"), LocalTime.parse("08:30"), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+        reservations.add(new Reservation((long) 2, LocalDate.parse("2020-06-30"), LocalTime.parse("08:30"), 1,
+                Route.KrakowToKatowice, "Przystanek2", "Przystanek3", customer, Status.Unrealized));
+        reservations.add(new Reservation((long) 3, LocalDate.parse("2021-03-06"), LocalTime.parse("08:30"), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek3", customer, Status.Created));
+
+        when(reservationRepo.countByStatusAndCustomer(Status.Unrealized ,
+                Optional.of(customer))).thenReturn(3);
+        when(reservationRepo.findByStatus(Status.Unrealized)).thenReturn(reservations);
+        when(reservationRepo.save(any(Reservation.class))).thenReturn(reservations.get(0));
+
+        assertTrue(reservationManager.enableReservation(Optional.of(customer)));
+
+        verify(reservationRepo, times(1)).countByStatusAndCustomer(Status.Unrealized ,
+                Optional.of(customer));
+        verify(reservationRepo, times(1)).findByStatus(Status.Unrealized);
+        verify(reservationRepo, times(3)).save(any(Reservation.class));
+        verifyNoInteractions(mailManager);
+    }
+
+    @Test
+    void enableReservation_shouldReturnFalse_sendEmail() throws MessagingException {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        List<Reservation> reservations = new ArrayList<>();
+        reservations.add(new Reservation((long) 1, LocalDate.parse("2020-06-26"), LocalTime.parse("08:30"), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+        reservations.add(new Reservation((long) 2, LocalDate.parse("2020-06-30"), LocalTime.parse("08:30"), 1,
+                Route.KrakowToKatowice, "Przystanek2", "Przystanek3", customer, Status.Unrealized));
+        reservations.add(new Reservation((long) 3, LocalDate.parse("2021-07-06"), LocalTime.parse("08:30"), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek3", customer, Status.Created));
+
+        when(reservationRepo.countByStatusAndCustomer(Status.Unrealized ,
+                Optional.of(customer))).thenReturn(3);
+        when(reservationRepo.findByStatus(Status.Unrealized)).thenReturn(reservations);
+        when(reservationRepo.save(any(Reservation.class))).thenReturn(reservations.get(0));
+
+        assertFalse(reservationManager.enableReservation(Optional.of(customer)));
+
+        verify(reservationRepo, times(1)).countByStatusAndCustomer(Status.Unrealized ,
+                Optional.of(customer));
+        verify(reservationRepo, times(1)).findByStatus(Status.Unrealized);
+        verify(reservationRepo, times(0)).save(any(Reservation.class));
+        verify(mailManager, times(1)).sendMail(anyString(), anyString(), anyString(), eq(false));
     }
 }
