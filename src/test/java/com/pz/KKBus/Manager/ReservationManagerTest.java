@@ -67,12 +67,9 @@ class ReservationManagerTest {
     void findAll_with_three_reservation() {
         when(reservationRepo.findAll()).thenReturn(reservationsList());
 
-        Iterable<Reservation> reservations2 = reservationManager.findAll();
-        int iterations = 0;
-        for (Reservation reservation: reservations2) {
-            iterations++;
-        }
-        assertEquals(3, iterations);
+        List<Reservation> reservations2 = reservationManager.findAll();
+
+        assertEquals(3, reservations2.size());
         verify(reservationRepo, times(1)).findAll();
     }
 
@@ -80,7 +77,7 @@ class ReservationManagerTest {
     void findAll_with_null() {
         when(reservationRepo.findAll()).thenReturn(null);
 
-        Iterable<Reservation> reservations2 = reservationManager.findAll();
+        List<Reservation> reservations2 = reservationManager.findAll();
 
         assertNull(reservations2);
         verify(reservationRepo, times(1)).findAll();

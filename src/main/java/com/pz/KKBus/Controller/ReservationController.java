@@ -18,6 +18,7 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -40,13 +41,9 @@ public class ReservationController {
     }
 
     @GetMapping()
-    public ResponseEntity getEmployees(){
-        Iterable<Reservation> foundReservation = reservationManager.findAll();
-        int iterations = 0;
-        for (Reservation reservation: foundReservation) {
-            iterations++;
-        }
-        if(iterations == 0){
+    public ResponseEntity getReservation(){
+        List<Reservation> foundReservation = reservationManager.findAll();
+        if(foundReservation.isEmpty()){
             return new ResponseEntity<>("Repository is empty!", HttpStatus.NOT_FOUND);
         } else
             return new ResponseEntity<>(foundReservation, HttpStatus.OK);
@@ -56,7 +53,7 @@ public class ReservationController {
     public ResponseEntity getById(@PathVariable Long id){
         Optional<Reservation> foundDate = reservationManager.findById(id);
         if(foundDate.isEmpty()){
-            return new ResponseEntity<>("Bad brand", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Bad brand", HttpStatus.NOT_FOUND);
         } else
             return new ResponseEntity<>(foundDate, HttpStatus.OK);
     }

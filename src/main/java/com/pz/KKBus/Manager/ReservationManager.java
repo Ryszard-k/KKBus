@@ -27,7 +27,7 @@ public class ReservationManager {
         this.mailManager = mailManager;
     }
 
-    public Iterable<Reservation> findAll(){
+    public List<Reservation> findAll(){
         return reservationRepo.findAll();
     }
 
