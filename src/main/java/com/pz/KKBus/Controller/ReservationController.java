@@ -65,7 +65,7 @@ public class ReservationController {
     public ResponseEntity<Object> addReservationAdmin(@RequestBody Reservation reservation,
                                               @PathVariable String username){
         Optional<Customer> customer = customerManager.findByUsername(username);
-        if (reservation != null && customer != null) {
+        if (reservation != null && customer.isPresent()) {
             reservationManager.save(reservation, customer);
             try {
                 mailManager.sendMail(customer.get().getEmail(), "Reservation", "You have new reservation on: "

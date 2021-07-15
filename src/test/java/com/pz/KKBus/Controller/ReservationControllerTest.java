@@ -1,5 +1,6 @@
 package com.pz.KKBus.Controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pz.KKBus.Manager.CustomerManager;
 import com.pz.KKBus.Manager.MailManager;
 import com.pz.KKBus.Manager.ReservationManager;
@@ -21,11 +22,17 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -38,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,6 +55,9 @@ class ReservationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    ObjectMapper mapper;
 
     @MockBean
     private ReservationManager reservationManager;
@@ -137,7 +148,56 @@ class ReservationControllerTest {
     }
 
     @Test
-    void addReservationAdmin() {
+    void addReservationAdmin() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.parse("2020-06-26"), LocalTime.parse("08:30"), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        when(customerManager.findByUsername(anyString())).thenReturn(Optional.of(customer));
+        when(reservationManager.save(reservation.get(), Optional.of(customer))).thenReturn(reservation.get());
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/reservation/for-admin/{username}", customer.getUsername())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(reservation);
+
+        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(customerManager, times(1)).findByUsername(customer.getUsername());
+        verify(reservationManager, times(1)).save(reservation.get(), Optional.of(customer));
+        verify(mailManager, times(1)).sendMail(anyString(), anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void addReservationAdmin_shouldReturnFalse_nullCustomerAndEmptyReservation() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.parse("2020-06-26"), LocalTime.parse("08:30"), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        when(customerManager.findByUsername(customer.getUsername())).thenReturn(Optional.empty());
+        when(reservationManager.save(reservation.get(), Optional.of(customer))).thenReturn(null);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/reservation/for-admin/{username}", customer.getUsername())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(null))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
     @Test
