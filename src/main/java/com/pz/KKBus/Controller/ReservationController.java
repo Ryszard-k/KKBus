@@ -120,7 +120,7 @@ public class ReservationController {
                     return new ResponseEntity<>("Bad trace", HttpStatus.BAD_REQUEST);
             }
 
-            if (reservation != null && customer != null && difference > 120) {
+            if (customer.isPresent() && difference > 120) {
                 reservationManager.save(reservation, customer);
                 try {
                     mailManager.sendMail(customer.get().getEmail(), "Reservation",

@@ -6,6 +6,10 @@ import com.pz.KKBus.Manager.MailManager;
 import com.pz.KKBus.Manager.ReservationManager;
 import com.pz.KKBus.Model.Entites.Customer;
 import com.pz.KKBus.Model.Entites.Reservation;
+import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakow;
+import com.pz.KKBus.Model.Entites.Schedules.KatowiceToKrakowDeparture;
+import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowice;
+import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowiceDeparture;
 import com.pz.KKBus.Model.Enums.Role;
 import com.pz.KKBus.Model.Enums.Route;
 import com.pz.KKBus.Model.Enums.Status;
@@ -201,7 +205,231 @@ class ReservationControllerTest {
     }
 
     @Test
-    void addReservation() {
+    void addReservation_KrkToKt_MonFri_returnTrue() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(3), LocalTime.now().plusHours(2), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KrakowToKatowice krakowToKatowice = new KrakowToKatowice((long) 2, "Przystanek2", null
+                , 10, 40);
+
+        KrakowToKatowiceDeparture krakowToKatowiceDeparture = new KrakowToKatowiceDeparture((long) 1, LocalTime.parse("11:45"),
+                LocalTime.parse("12:12"), krakowToKatowice);
+
+        when(customerManager.findByUsername(anyString())).thenReturn(Optional.of(customer));
+        when(reservationManager.save(reservation.get(), Optional.of(customer))).thenReturn(reservation.get());
+        when(reservationManager.enableReservation(Optional.of(customer))).thenReturn(true);
+        when(krakowToKatowiceDepartureRepo.findTopByOrderByMonFriDepartureAsc()).thenReturn(krakowToKatowiceDeparture);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/reservation/{username}", customer.getUsername())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(reservation);
+
+        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(customerManager, times(1)).findByUsername(customer.getUsername());
+        verify(reservationManager, times(1)).enableReservation(Optional.of(customer));
+        verify(reservationManager, times(1)).save(reservation.get(), Optional.of(customer));
+        verify(mailManager, times(1)).sendMail(anyString(), anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void addReservation_KrkToKt_SatSun_returnTrue() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(1), LocalTime.now().plusHours(2), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KrakowToKatowice krakowToKatowice = new KrakowToKatowice((long) 2, "Przystanek2", null
+                , 10, 40);
+
+        KrakowToKatowiceDeparture krakowToKatowiceDeparture = new KrakowToKatowiceDeparture((long) 1, LocalTime.parse("11:45"),
+                LocalTime.parse("12:12"), krakowToKatowice);
+
+        when(customerManager.findByUsername(anyString())).thenReturn(Optional.of(customer));
+        when(reservationManager.save(reservation.get(), Optional.of(customer))).thenReturn(reservation.get());
+        when(reservationManager.enableReservation(Optional.of(customer))).thenReturn(true);
+        when(krakowToKatowiceDepartureRepo.findTopByOrderBySatSunDepartureAsc()).thenReturn(krakowToKatowiceDeparture);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/reservation/{username}", customer.getUsername())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(reservation);
+
+        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(customerManager, times(1)).findByUsername(customer.getUsername());
+        verify(reservationManager, times(1)).enableReservation(Optional.of(customer));
+        verify(reservationManager, times(1)).save(reservation.get(), Optional.of(customer));
+        verify(mailManager, times(1)).sendMail(anyString(), anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void addReservation_KrkToKt_badDate_returnFalse() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(10), LocalTime.now().plusHours(2), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KrakowToKatowice krakowToKatowice = new KrakowToKatowice((long) 2, "Przystanek2", null
+                , 10, 40);
+
+        KrakowToKatowiceDeparture krakowToKatowiceDeparture = new KrakowToKatowiceDeparture((long) 1, LocalTime.parse("11:45"),
+                LocalTime.parse("12:12"), krakowToKatowice);
+
+        when(customerManager.findByUsername(anyString())).thenReturn(Optional.of(customer));
+        when(reservationManager.save(reservation.get(), Optional.of(customer))).thenReturn(reservation.get());
+        when(reservationManager.enableReservation(Optional.of(customer))).thenReturn(true);
+        when(krakowToKatowiceDepartureRepo.findTopByOrderBySatSunDepartureAsc()).thenReturn(krakowToKatowiceDeparture);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/reservation/{username}", customer.getUsername())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+
+        verify(customerManager, times(1)).findByUsername(customer.getUsername());
+        verify(reservationManager, times(0)).enableReservation(Optional.of(customer));
+        verify(reservationManager, times(0)).save(reservation.get(), Optional.of(customer));
+        verify(mailManager, times(0)).sendMail(anyString(), anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void addReservation_KtToKrk_MonFri_returnTrue() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(3), LocalTime.now().plusHours(2), 2,
+                Route.KatowiceToKrakow, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KatowiceToKrakow katowiceToKrakow = new KatowiceToKrakow((long) 2,"Przystanek2",null
+                , 7, 32);
+
+        KatowiceToKrakowDeparture katowiceToKrakowDeparture = new KatowiceToKrakowDeparture((long) 1, LocalTime.parse("08:01"),
+                LocalTime.parse("11:47"), katowiceToKrakow);
+
+        when(customerManager.findByUsername(anyString())).thenReturn(Optional.of(customer));
+        when(reservationManager.save(reservation.get(), Optional.of(customer))).thenReturn(reservation.get());
+        when(reservationManager.enableReservation(Optional.of(customer))).thenReturn(true);
+        when(katowiceToKrakowDepartureRepo.findTopByOrderByMonFriDepartureAsc()).thenReturn(katowiceToKrakowDeparture);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/reservation/{username}", customer.getUsername())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(reservation);
+
+        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(customerManager, times(1)).findByUsername(customer.getUsername());
+        verify(reservationManager, times(1)).enableReservation(Optional.of(customer));
+        verify(reservationManager, times(1)).save(reservation.get(), Optional.of(customer));
+        verify(mailManager, times(1)).sendMail(anyString(), anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void addReservation_KtToKrk_SatSun_returnTrue() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(1), LocalTime.now().plusHours(2), 2,
+                Route.KatowiceToKrakow, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KatowiceToKrakow katowiceToKrakow = new KatowiceToKrakow((long) 2,"Przystanek2",null
+                , 7, 32);
+
+        KatowiceToKrakowDeparture katowiceToKrakowDeparture = new KatowiceToKrakowDeparture((long) 1, LocalTime.parse("08:01"),
+                LocalTime.parse("11:47"), katowiceToKrakow);
+
+        when(customerManager.findByUsername(anyString())).thenReturn(Optional.of(customer));
+        when(reservationManager.save(reservation.get(), Optional.of(customer))).thenReturn(reservation.get());
+        when(reservationManager.enableReservation(Optional.of(customer))).thenReturn(true);
+        when(katowiceToKrakowDepartureRepo.findTopByOrderBySatSunDepartureAsc()).thenReturn(katowiceToKrakowDeparture);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/reservation/{username}", customer.getUsername())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(reservation);
+
+        assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(customerManager, times(1)).findByUsername(customer.getUsername());
+        verify(reservationManager, times(1)).enableReservation(Optional.of(customer));
+        verify(reservationManager, times(1)).save(reservation.get(), Optional.of(customer));
+        verify(mailManager, times(1)).sendMail(anyString(), anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void addReservation_KtToKrk_badDate_returnFalse() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(10), LocalTime.now().plusHours(2), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KatowiceToKrakow katowiceToKrakow = new KatowiceToKrakow((long) 2,"Przystanek2",null
+                , 7, 32);
+
+        KatowiceToKrakowDeparture katowiceToKrakowDeparture = new KatowiceToKrakowDeparture((long) 1, LocalTime.parse("08:01"),
+                LocalTime.parse("11:47"), katowiceToKrakow);
+
+        when(customerManager.findByUsername(anyString())).thenReturn(Optional.of(customer));
+        when(reservationManager.save(reservation.get(), Optional.of(customer))).thenReturn(reservation.get());
+        when(reservationManager.enableReservation(Optional.of(customer))).thenReturn(true);
+        when(katowiceToKrakowDepartureRepo.findTopByOrderBySatSunDepartureAsc()).thenReturn(katowiceToKrakowDeparture);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/reservation/{username}", customer.getUsername())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+
+        verify(customerManager, times(1)).findByUsername(customer.getUsername());
+        verify(reservationManager, times(0)).enableReservation(Optional.of(customer));
+        verify(reservationManager, times(0)).save(reservation.get(), Optional.of(customer));
+        verify(mailManager, times(0)).sendMail(anyString(), anyString(), anyString(), eq(false));
     }
 
     @Test
