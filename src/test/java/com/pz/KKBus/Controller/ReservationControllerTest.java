@@ -1,6 +1,5 @@
 package com.pz.KKBus.Controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pz.KKBus.Manager.CustomerManager;
 import com.pz.KKBus.Manager.MailManager;
@@ -14,15 +13,12 @@ import com.pz.KKBus.Model.Entites.Schedules.KrakowToKatowiceDeparture;
 import com.pz.KKBus.Model.Enums.Role;
 import com.pz.KKBus.Model.Enums.Route;
 import com.pz.KKBus.Model.Enums.Status;
-import com.pz.KKBus.Model.Repositories.ReservationRepo;
 import com.pz.KKBus.Model.Repositories.SchedulesRepo.KatowiceToKrakowDepartureRepo;
 import com.pz.KKBus.Model.Repositories.SchedulesRepo.KrakowToKatowiceDepartureRepo;
 import com.pz.KKBus.Security.Services.UserDetailServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,14 +26,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -47,10 +40,8 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -650,6 +641,61 @@ class ReservationControllerTest {
     }
 
     @Test
-    void deleteReservationAdmin() {
+    void deleteReservationAdmin_returnTrue() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(5), LocalTime.now().plusHours(2), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KrakowToKatowice krakowToKatowice = new KrakowToKatowice((long) 2, "Przystanek2", null
+                , 10, 40);
+
+        when(reservationManager.findById(anyLong())).thenReturn(reservation);
+        when(reservationManager.deleteById(anyLong())).thenReturn(Optional.of(reservation.get()));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/reservation/for-admin/{id}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(reservation);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(reservationManager, times(1)).findById(anyLong());
+        verify(reservationManager, times(1)).deleteById(anyLong());
+        verify(mailManager, times(1)).sendMail(anyString(), anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void deleteReservationAdmin_returnFalse() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(5), LocalTime.now().plusHours(2), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        when(reservationManager.findById(anyLong())).thenReturn(Optional.empty());
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/reservation/for-admin/{id}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+
+        verify(reservationManager, times(1)).findById(anyLong());
+        verify(reservationManager, times(0)).deleteById(anyLong());
+        verify(mailManager, times(0)).sendMail(anyString(), anyString(), anyString(), eq(false));
     }
 }

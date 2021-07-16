@@ -194,7 +194,6 @@ public class ReservationController {
             } catch (MessagingException e) {
                 e.printStackTrace();
             }
-
             return new ResponseEntity<>(foundReservation,HttpStatus.OK);
         } else
             return new ResponseEntity<>("Not found departure to delete!", HttpStatus.NOT_FOUND);
