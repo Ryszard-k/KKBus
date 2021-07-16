@@ -1,5 +1,6 @@
 package com.pz.KKBus.Controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pz.KKBus.Manager.CustomerManager;
 import com.pz.KKBus.Manager.MailManager;
@@ -397,7 +398,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    void addReservation_KtToKrk_badDate_returnFalse() throws Exception {
+    void addReservation_KtToKrk_differenceOutOfBound_returnFalse() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
                 123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
 
@@ -433,7 +434,219 @@ class ReservationControllerTest {
     }
 
     @Test
-    void deleteReservation() {
+    void deleteReservation_KtToKrk_SatSun_ReturnTrue() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(2), LocalTime.now().plusHours(2), 2,
+                Route.KatowiceToKrakow, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KatowiceToKrakow katowiceToKrakow = new KatowiceToKrakow((long) 2,"Przystanek2",null
+                , 7, 32);
+
+        KatowiceToKrakowDeparture katowiceToKrakowDeparture = new KatowiceToKrakowDeparture((long) 1, LocalTime.parse("08:01"),
+                LocalTime.parse("11:47"), katowiceToKrakow);
+
+        when(reservationManager.findById(anyLong())).thenReturn(reservation);
+        when(reservationManager.deleteById(anyLong())).thenReturn(Optional.of(reservation.get()));
+        when(katowiceToKrakowDepartureRepo.findTopByOrderBySatSunDepartureAsc()).thenReturn(katowiceToKrakowDeparture);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/reservation/{id}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(reservation);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(reservationManager, times(1)).findById(anyLong());
+        verify(reservationManager, times(1)).deleteById(anyLong());
+        verify(mailManager, times(1)).sendMail(anyString(), anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void deleteReservation_KtToKrk_MonFri_ReturnTrue() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(5), LocalTime.now().plusHours(2), 2,
+                Route.KatowiceToKrakow, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KatowiceToKrakow katowiceToKrakow = new KatowiceToKrakow((long) 2,"Przystanek2",null
+                , 7, 32);
+
+        KatowiceToKrakowDeparture katowiceToKrakowDeparture = new KatowiceToKrakowDeparture((long) 1, LocalTime.parse("08:01"),
+                LocalTime.parse("11:47"), katowiceToKrakow);
+
+        when(reservationManager.findById(anyLong())).thenReturn(reservation);
+        when(reservationManager.deleteById(anyLong())).thenReturn(Optional.of(reservation.get()));
+        when(katowiceToKrakowDepartureRepo.findTopByOrderByMonFriDepartureAsc()).thenReturn(katowiceToKrakowDeparture);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/reservation/{id}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(reservation);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(reservationManager, times(1)).findById(anyLong());
+        verify(reservationManager, times(1)).deleteById(anyLong());
+        verify(mailManager, times(1)).sendMail(anyString(), anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void deleteReservation_KtToKrk_differenceOutOfBound_ReturnFalse() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now(), LocalTime.now(), 2,
+                Route.KatowiceToKrakow, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KatowiceToKrakow katowiceToKrakow = new KatowiceToKrakow((long) 2,"Przystanek2",null
+                , 7, 32);
+
+        KatowiceToKrakowDeparture katowiceToKrakowDeparture = new KatowiceToKrakowDeparture((long) 1, LocalTime.parse("21:01"),
+                LocalTime.parse("11:47"), katowiceToKrakow);
+
+        when(reservationManager.findById(anyLong())).thenReturn(reservation);
+        when(reservationManager.deleteById(anyLong())).thenReturn(Optional.of(reservation.get()));
+        when(katowiceToKrakowDepartureRepo.findTopByOrderByMonFriDepartureAsc()).thenReturn(katowiceToKrakowDeparture);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/reservation/{id}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+
+        verify(reservationManager, times(1)).findById(anyLong());
+        verify(reservationManager, times(0)).deleteById(anyLong());
+        verify(mailManager, times(0)).sendMail(anyString(), anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void deleteReservation_KrkToKt_SatSun_ReturnTrue() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(2), LocalTime.now().plusHours(2), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KrakowToKatowice krakowToKatowice = new KrakowToKatowice((long) 2, "Przystanek2", null
+                , 10, 40);
+
+        KrakowToKatowiceDeparture krakowToKatowiceDeparture = new KrakowToKatowiceDeparture((long) 1, LocalTime.parse("11:45"),
+                LocalTime.parse("12:12"), krakowToKatowice);
+
+        when(reservationManager.findById(anyLong())).thenReturn(reservation);
+        when(reservationManager.deleteById(anyLong())).thenReturn(Optional.of(reservation.get()));
+        when(krakowToKatowiceDepartureRepo.findTopByOrderBySatSunDepartureAsc()).thenReturn(krakowToKatowiceDeparture);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/reservation/{id}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(reservation);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(reservationManager, times(1)).findById(anyLong());
+        verify(reservationManager, times(1)).deleteById(anyLong());
+        verify(mailManager, times(1)).sendMail(anyString(), anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void deleteReservation_KrkToKt_MonFri_ReturnTrue() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(5), LocalTime.now().plusHours(2), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KrakowToKatowice krakowToKatowice = new KrakowToKatowice((long) 2, "Przystanek2", null
+                , 10, 40);
+
+        KrakowToKatowiceDeparture krakowToKatowiceDeparture = new KrakowToKatowiceDeparture((long) 1, LocalTime.parse("11:45"),
+                LocalTime.parse("12:12"), krakowToKatowice);
+
+        when(reservationManager.findById(anyLong())).thenReturn(reservation);
+        when(reservationManager.deleteById(anyLong())).thenReturn(Optional.of(reservation.get()));
+        when(krakowToKatowiceDepartureRepo.findTopByOrderByMonFriDepartureAsc()).thenReturn(krakowToKatowiceDeparture);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/reservation/{id}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(reservation);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(reservationManager, times(1)).findById(anyLong());
+        verify(reservationManager, times(1)).deleteById(anyLong());
+        verify(mailManager, times(1)).sendMail(anyString(), anyString(), anyString(), eq(false));
+    }
+
+    @Test
+    void deleteReservation_KrkToKt_differenceOutOfBound_ReturnFalse() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now(), LocalTime.now(), 2,
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+
+        KrakowToKatowice krakowToKatowice = new KrakowToKatowice((long) 2, "Przystanek2", null
+                , 10, 40);
+
+        KrakowToKatowiceDeparture krakowToKatowiceDeparture = new KrakowToKatowiceDeparture((long) 1, LocalTime.parse("11:45"),
+                LocalTime.parse("12:12"), krakowToKatowice);
+
+        when(reservationManager.findById(anyLong())).thenReturn(reservation);
+        when(reservationManager.deleteById(anyLong())).thenReturn(Optional.of(reservation.get()));
+        when(krakowToKatowiceDepartureRepo.findTopByOrderByMonFriDepartureAsc()).thenReturn(krakowToKatowiceDeparture);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/reservation/{id}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(reservation))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+
+        verify(reservationManager, times(1)).findById(anyLong());
+        verify(reservationManager, times(0)).deleteById(anyLong());
+        verify(mailManager, times(0)).sendMail(anyString(), anyString(), anyString(), eq(false));
     }
 
     @Test

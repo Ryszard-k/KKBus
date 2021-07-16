@@ -138,7 +138,7 @@ public class ReservationController {
     public ResponseEntity<Object> deleteReservation(@PathVariable Long id) {
         Optional<Reservation> foundReservation = reservationManager.findById(id);
         long difference = 0;
-        if (LocalDate.now().isBefore(foundReservation.get().getDate())) {
+        if (LocalDate.now().isBefore(foundReservation.get().getDate()) || LocalDate.now().isEqual(foundReservation.get().getDate())) {
             switch (foundReservation.get().getRoute()) {
                 case KrakowToKatowice:
                     if (foundReservation.get().getDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) ||
