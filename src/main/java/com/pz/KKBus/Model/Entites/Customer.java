@@ -51,10 +51,15 @@ public class Customer implements UserDetails {
     private Role role;
     private boolean isEnabled;
     private boolean discount;
+    private int points;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Reservation> reservations;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Reward> rewards;
 
     public Customer(Long id, String firstName, String lastName, LocalDate birthDate, @Email String email,
                     Integer phoneNumber, String username, String password, Role role, boolean isEnabled) {
@@ -188,6 +193,22 @@ public class Customer implements UserDetails {
 
     public void setReservations(Set<Reservation> reservations) {
         this.reservations = reservations;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public Set<Reward> getRewards() {
+        return rewards;
+    }
+
+    public void setRewards(Set<Reward> rewards) {
+        this.rewards = rewards;
     }
 
     @Override
