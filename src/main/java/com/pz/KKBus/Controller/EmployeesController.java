@@ -67,7 +67,7 @@ public class EmployeesController {
     }
 
     @DeleteMapping("/employees/{id}")
-    public ResponseEntity<Object> deleteCar(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteEmployee(@PathVariable Long id) {
         Optional<Employees> foundCar = employeesManager.findById(id);
         if (foundCar.isPresent()) {
             employeesManager.deleteById(id);

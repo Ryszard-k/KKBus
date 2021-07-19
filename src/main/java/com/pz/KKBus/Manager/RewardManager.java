@@ -1,10 +1,8 @@
 package com.pz.KKBus.Manager;
 
 import com.pz.KKBus.Model.Entites.Customer;
-import com.pz.KKBus.Model.Entites.Reservation;
 import com.pz.KKBus.Model.Entites.Reward;
 import com.pz.KKBus.Model.Enums.RewardStatus;
-import com.pz.KKBus.Model.Enums.Status;
 import com.pz.KKBus.Model.Repositories.RewardRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +27,10 @@ public class RewardManager {
 
     public Optional<Reward> findByName(String name){
         return rewardRepo.findByName(name);
+    }
+
+    public Optional<Reward> findById(Long id){
+        return rewardRepo.findById(id);
     }
 
     public Reward save(Reward reward, Optional<Customer> customer){

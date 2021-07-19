@@ -6,6 +6,7 @@ import com.sun.istack.NotNull;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 public class Reward {
@@ -17,6 +18,9 @@ public class Reward {
     @NotNull
     private String name;
 
+    @NotNull
+    private int points;
+
     private LocalDate date;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
@@ -27,9 +31,10 @@ public class Reward {
     @Enumerated(EnumType.STRING)
     private RewardStatus rewardStatus;
 
-    public Reward(Long id, String name, LocalDate date, Customer customer, RewardStatus rewardStatus) {
+    public Reward(Long id, String name, int points, LocalDate date, Customer customer, RewardStatus rewardStatus) {
         this.id = id;
         this.name = name;
+        this.points = points;
         this.date = date;
         this.customer = customer;
         this.rewardStatus = rewardStatus;
@@ -73,5 +78,26 @@ public class Reward {
 
     public void setRewardStatus(RewardStatus rewardStatus) {
         this.rewardStatus = rewardStatus;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Reward)) return false;
+        Reward reward = (Reward) o;
+        return id.equals(reward.id) && name.equals(reward.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

@@ -1,12 +1,9 @@
 package com.pz.KKBus.Manager;
 
 import com.pz.KKBus.Model.Entites.Customer;
-import com.pz.KKBus.Model.Entites.Reservation;
 import com.pz.KKBus.Model.Entites.Reward;
 import com.pz.KKBus.Model.Enums.RewardStatus;
 import com.pz.KKBus.Model.Enums.Role;
-import com.pz.KKBus.Model.Enums.Route;
-import com.pz.KKBus.Model.Enums.Status;
 import com.pz.KKBus.Model.Repositories.RewardRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +14,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,9 +37,9 @@ class RewardManagerTest {
 
     private List<Reward> rewardsList() {
         List<Reward> rewards = new ArrayList<>();
-        rewards.add(new Reward((long) 1, "Discount -30%", LocalDate.parse("2021-06-30"), customerList().get(0),
+        rewards.add(new Reward((long) 1, "Discount -30%", 30, LocalDate.parse("2021-06-30"), customerList().get(0),
                 RewardStatus.Unrealized));
-        rewards.add(new Reward((long) 1, "Discount -20%", LocalDate.parse("2021-06-25"), customerList().get(0),
+        rewards.add(new Reward((long) 1, "Discount -20%", 40, LocalDate.parse("2021-06-25"), customerList().get(0),
                 RewardStatus.Unrealized));
         return rewards;
     }
@@ -101,7 +97,7 @@ class RewardManagerTest {
 
     @Test
     void save() {
-        Reward reward = new Reward((long) 5, "Discount -40%", LocalDate.parse("2021-06-27"), customerList().get(0),
+        Reward reward = new Reward((long) 5, "Discount -40%", 35, LocalDate.parse("2021-06-27"), customerList().get(0),
                 RewardStatus.Unrealized);
         when(rewardRepo.save(any(Reward.class))).thenReturn(reward);
 
@@ -123,7 +119,7 @@ class RewardManagerTest {
 
     @Test
     void save_with_null_customer() {
-        Reward reward = new Reward((long) 5, "Discount -40%", LocalDate.parse("2021-06-27"), customerList().get(0),
+        Reward reward = new Reward((long) 5, "Discount -40%", 35, LocalDate.parse("2021-06-27"), customerList().get(0),
                 RewardStatus.Unrealized);
         when(rewardRepo.save(null)).thenThrow(NullPointerException.class);
 
@@ -162,5 +158,28 @@ class RewardManagerTest {
         assertNull(reward);
         verify(rewardRepo, times(1)).findById(1L);
         verify(rewardRepo, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void findById() {
+        when(rewardRepo.findById(1L)).thenReturn(java.util.Optional.ofNullable(rewardsList().get(0)));
+
+        Optional<Reward> reward = rewardManager.findById(1L);
+
+        assertEquals(rewardsList().get(0).getId(), reward.get().getId());
+        assertEquals(rewardsList().get(0).getDate(), reward.get().getDate());
+        assertEquals(rewardsList().get(0).getCustomer().getFirstName(), reward.get().getCustomer().getFirstName());
+
+        verify(rewardRepo, times(1)).findById(1L);
+    }
+
+    @Test
+    void findById_not_found() {
+        when(rewardRepo.findById(anyLong())).thenReturn(null);
+
+        Optional<Reward> reservations2 = rewardManager.findById(1L);
+
+        assertNull(reservations2);
+        verify(rewardRepo, times(1)).findById(1L);
     }
 }
