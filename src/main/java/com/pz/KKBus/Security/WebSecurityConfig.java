@@ -63,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public HttpFirewall looseHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
-        firewall.setAllowedHttpMethods(Arrays.asList("GET", "POST"));
+        firewall.setAllowedHttpMethods(Arrays.asList("GET", "POST", "DELETE"));
         firewall.setAllowSemicolon(true);
         firewall.setAllowUrlEncodedSlash(true);
         firewall.setAllowBackSlash(true);

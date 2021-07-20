@@ -69,6 +69,6 @@ public class RewardController {
             customerManager.save(customer);
             return new ResponseEntity<>(foundReward,HttpStatus.OK);
         } else
-            return new ResponseEntity<>("Not found car to delete!", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Not found reward to delete!", HttpStatus.NOT_FOUND);
     }
 }

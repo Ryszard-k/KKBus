@@ -267,6 +267,89 @@ class RewardControllerTest {
     }
 
     @Test
-    void deleteReward() {
+    void deleteReward() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Reward reward = new Reward((long) 3, "Discount -45%", 50, LocalDate.parse("2021-06-30"), customerList().get(0),
+                RewardStatus.Unrealized);
+
+        when(rewardManager.findById(anyLong())).thenReturn(Optional.of(reward));
+        when(rewardManager.deleteById(anyLong())).thenReturn(Optional.of(reward));
+        when(customerManager.save(customer)).thenReturn(customer);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/reward/{id}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(reward);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(rewardManager, times(1)).findById(anyLong());
+        verify(rewardManager, times(1)).deleteById(anyLong());
+        verify(customerManager, times(1)).save(customer);
+    }
+
+    @Test
+    void deleteReward_NullReward_returnFalse() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Reward reward = new Reward((long) 3, "Discount -45%", 50, LocalDate.parse("2021-06-30"), customerList().get(0),
+                RewardStatus.Unrealized);
+
+        when(rewardManager.findById(anyLong())).thenReturn(Optional.empty());
+        when(rewardManager.deleteById(anyLong())).thenReturn(Optional.of(reward));
+        when(customerManager.save(customer)).thenReturn(customer);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/reward/{id}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = "Not found reward to delete!";
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(rewardManager, times(1)).findById(anyLong());
+        verify(rewardManager, times(0)).deleteById(anyLong());
+        verify(customerManager, times(0)).save(customer);
+    }
+
+    @Test
+    void deleteReward_falseIf_returnFalse() throws Exception {
+        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+
+        Reward reward = new Reward((long) 3, "Discount -45%", 50, LocalDate.parse("2021-06-30"), customerList().get(0),
+                RewardStatus.Realized);
+
+        when(rewardManager.findById(anyLong())).thenReturn(Optional.of(reward));
+        when(rewardManager.deleteById(anyLong())).thenReturn(Optional.of(reward));
+        when(customerManager.save(customer)).thenReturn(customer);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/reward/{id}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = "Not found reward to delete!";
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(rewardManager, times(1)).findById(anyLong());
+        verify(rewardManager, times(0)).deleteById(anyLong());
+        verify(customerManager, times(0)).save(customer);
     }
 }
