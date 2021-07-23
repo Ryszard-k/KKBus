@@ -4,6 +4,7 @@ import com.pz.KKBus.Staff.Model.Enums.Role;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 public class Employees {
@@ -18,6 +19,10 @@ public class Employees {
     @Enumerated(EnumType.STRING)
     private Role role;
     private int salary;
+
+    @OneToMany(mappedBy = "employees", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Availability> availabilities;
 
     public Employees(){}
 
@@ -76,5 +81,13 @@ public class Employees {
 
     public void setSalary(int salary) {
         this.salary = salary;
+    }
+
+    public Set<Availability> getAvailabilities() {
+        return availabilities;
+    }
+
+    public void setAvailabilities(Set<Availability> availabilities) {
+        this.availabilities = availabilities;
     }
 }
