@@ -28,6 +28,9 @@ public class Availability {
         this.employees = employees;
     }
 
+    public Availability() {
+    }
+
     public Long getId() {
         return id;
     }

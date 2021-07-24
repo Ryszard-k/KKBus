@@ -1,5 +1,6 @@
 package com.pz.KKBus.Staff.Model.Entites;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pz.KKBus.Staff.Model.Enums.Role;
 
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
+@JsonIgnoreProperties({"availabilities"})
 public class Employees {
 
     @GeneratedValue(strategy = GenerationType.AUTO)

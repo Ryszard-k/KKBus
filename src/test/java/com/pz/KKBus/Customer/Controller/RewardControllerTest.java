@@ -9,6 +9,7 @@ import com.pz.KKBus.Customer.Manager.RewardManager;
 import com.pz.KKBus.Customer.Model.Entites.Customer;
 import com.pz.KKBus.Customer.Model.Entites.Reward;
 import com.pz.KKBus.Customer.Model.Enums.RewardStatus;
+import com.pz.KKBus.Staff.Model.Entites.Employees;
 import com.pz.KKBus.Staff.Model.Enums.Role;
 import com.pz.KKBus.Customer.Model.Repositories.RewardRepo;
 import com.pz.KKBus.Customer.Model.Repositories.SchedulesRepo.KatowiceToKrakowDepartureRepo;
@@ -137,7 +138,7 @@ class RewardControllerTest {
     }
 
     @Test
-    void getById() throws Exception {
+    void getById_notFound() throws Exception {
         when(rewardManager.findById(anyLong())).thenReturn(Optional.empty());
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -156,7 +157,7 @@ class RewardControllerTest {
     }
 
     @Test
-    void getById_notFound() throws Exception {
+    void getById() throws Exception {
         when(rewardManager.findById(anyLong())).thenReturn(Optional.ofNullable(rewardsList().get(0)));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -271,7 +272,7 @@ class RewardControllerTest {
 
         when(rewardManager.findById(anyLong())).thenReturn(Optional.of(reward));
         when(rewardManager.deleteById(anyLong())).thenReturn(Optional.of(reward));
-        when(customerManager.save(customer)).thenReturn(customer);
+        when(customerManager.update(customer)).thenReturn(customer);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete("/reward/{id}", customer.getId())
@@ -287,7 +288,7 @@ class RewardControllerTest {
 
         verify(rewardManager, times(1)).findById(anyLong());
         verify(rewardManager, times(1)).deleteById(anyLong());
-        verify(customerManager, times(1)).save(customer);
+        verify(customerManager, times(1)).update(customer);
     }
 
     @Test
@@ -300,7 +301,7 @@ class RewardControllerTest {
 
         when(rewardManager.findById(anyLong())).thenReturn(Optional.empty());
         when(rewardManager.deleteById(anyLong())).thenReturn(Optional.of(reward));
-        when(customerManager.save(customer)).thenReturn(customer);
+        when(customerManager.update(customer)).thenReturn(customer);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete("/reward/{id}", customer.getId())
@@ -316,7 +317,7 @@ class RewardControllerTest {
 
         verify(rewardManager, times(1)).findById(anyLong());
         verify(rewardManager, times(0)).deleteById(anyLong());
-        verify(customerManager, times(0)).save(customer);
+        verify(customerManager, times(0)).update(customer);
     }
 
     @Test
@@ -329,7 +330,7 @@ class RewardControllerTest {
 
         when(rewardManager.findById(anyLong())).thenReturn(Optional.of(reward));
         when(rewardManager.deleteById(anyLong())).thenReturn(Optional.of(reward));
-        when(customerManager.save(customer)).thenReturn(customer);
+        when(customerManager.update(customer)).thenReturn(customer);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete("/reward/{id}", customer.getId())
@@ -345,6 +346,6 @@ class RewardControllerTest {
 
         verify(rewardManager, times(1)).findById(anyLong());
         verify(rewardManager, times(0)).deleteById(anyLong());
-        verify(customerManager, times(0)).save(customer);
+        verify(customerManager, times(0)).update(customer);
     }
 }

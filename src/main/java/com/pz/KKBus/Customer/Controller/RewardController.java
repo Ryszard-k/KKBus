@@ -65,7 +65,7 @@ public class RewardController {
             Customer customer = foundReward.get().getCustomer();
             int points = customer.getPoints() + foundReward.get().getPoints();
             customer.setPoints(points);
-        //    customerManager.update(customer);
+            customerManager.update(customer);
             rewardManager.deleteById(id);
             return new ResponseEntity<>(foundReward,HttpStatus.OK);
         } else

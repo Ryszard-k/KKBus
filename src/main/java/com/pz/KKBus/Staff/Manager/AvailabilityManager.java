@@ -35,13 +35,8 @@ public class AvailabilityManager {
     }
 
     public List<Availability> deleteAll(List<Availability> deleted){
-        for (Availability availability : deleted){
-            if (availabilityRepo.existsById(availability.getId())){
-                availabilityRepo.deleteById(availability.getId());
-            } else {
-                deleted.remove(availability);
-            }
-        }
+        deleted.removeIf(availability -> !availabilityRepo.existsById(availability.getId()));
+        availabilityRepo.deleteAll(deleted);
         return deleted;
     }
 }

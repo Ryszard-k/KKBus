@@ -134,7 +134,7 @@ class AvailabilityManagerTest {
         assertEquals(3, availabilities.size());
 
         verify(availabilityRepo, times(3)).existsById(anyLong());
-        verify(availabilityRepo, times(3)).deleteById(anyLong());
+        verify(availabilityRepo, times(1)).deleteAll(anyList());
     }
 
     @Test
@@ -149,7 +149,21 @@ class AvailabilityManagerTest {
         assertEquals(availabilities.get(0), availabilityList().get(0));
         assertEquals(availabilities.get(1), availabilityList().get(2));
 
-        verify(availabilityRepo, times(2)).existsById(anyLong());
-        verify(availabilityRepo, times(1)).deleteById(anyLong());
+        verify(availabilityRepo, times(3)).existsById(anyLong());
+        verify(availabilityRepo, times(1)).deleteAll(anyList());
+    }
+
+    @Test
+    void deleteAll_with0Exist() {
+        when(availabilityRepo.existsById(1L)).thenReturn(false);
+        when(availabilityRepo.existsById(2L)).thenReturn(false);
+        when(availabilityRepo.existsById(3L)).thenReturn(false);
+
+        List<Availability> availabilities = availabilityManager.deleteAll(availabilityList());
+
+        assertEquals(0, availabilities.size());
+
+        verify(availabilityRepo, times(3)).existsById(anyLong());
+        verify(availabilityRepo, times(1)).deleteAll(anyList());
     }
 }
