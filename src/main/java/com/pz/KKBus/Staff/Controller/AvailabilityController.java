@@ -1,9 +1,5 @@
 package com.pz.KKBus.Staff.Controller;
 
-import com.pz.KKBus.Customer.Model.Entites.Customer;
-import com.pz.KKBus.Customer.Model.Entites.Reservation;
-import com.pz.KKBus.Customer.Model.Entites.Reward;
-import com.pz.KKBus.Customer.Model.Enums.RewardStatus;
 import com.pz.KKBus.Staff.Manager.AvailabilityManager;
 import com.pz.KKBus.Staff.Manager.EmployeesManager;
 import com.pz.KKBus.Staff.Model.Entites.Availability;

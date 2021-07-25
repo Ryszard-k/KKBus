@@ -1,9 +1,5 @@
 package com.pz.KKBus.Staff.Manager;
 
-import com.pz.KKBus.Customer.Model.Entites.Customer;
-import com.pz.KKBus.Customer.Model.Entites.Reservation;
-import com.pz.KKBus.Customer.Model.Entites.Reward;
-import com.pz.KKBus.Customer.Model.Enums.RewardStatus;
 import com.pz.KKBus.Staff.Model.Entites.Availability;
 import com.pz.KKBus.Staff.Model.Entites.Employees;
 import com.pz.KKBus.Staff.Model.Enums.Role;
@@ -87,7 +83,6 @@ class AvailabilityManagerTest {
         assertEquals(availabilityList().get(0).getEmployees().getFirstName(), availability.get().getEmployees().getFirstName());
 
         verify(availabilityRepo, times(1)).findById(1L);
-
     }
 
     @Test
