@@ -28,6 +28,9 @@ public class Unavailability {
         this.employeesUn = employeesUn;
     }
 
+    public Unavailability() {
+    }
+
     public Long getId() {
         return id;
     }
