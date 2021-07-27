@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
-@JsonIgnoreProperties({"availabilities", "unavailabilities"})
+@JsonIgnoreProperties({"availabilities", "unavailabilities", "schedules"})
 public class Employees {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,6 +29,10 @@ public class Employees {
     @OneToMany(mappedBy = "employeesUn", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Unavailability> unavailabilities;
+
+    @OneToMany(mappedBy = "employeesSchedule", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Schedule> schedules;
 
     public Employees(){}
 
@@ -103,5 +107,13 @@ public class Employees {
 
     public void setUnavailabilities(Set<Unavailability> unavailabilities) {
         this.unavailabilities = unavailabilities;
+    }
+
+    public Set<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(Set<Schedule> schedules) {
+        this.schedules = schedules;
     }
 }
