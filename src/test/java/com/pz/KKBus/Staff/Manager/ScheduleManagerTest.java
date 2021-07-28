@@ -115,8 +115,43 @@ class ScheduleManagerTest {
     }
 
     @Test
-    void findByPeriodForEmployee(){
+    void findByPeriodAll_withNull() {
+        when(scheduleRepo.findAllByWorkDateBetween(LocalDate.now(), LocalDate.now().plusDays(3)))
+                .thenReturn(null);
 
+        List<Schedule> schedule = scheduleManager.findByPeriodAll(LocalDate.now(), LocalDate.now().plusDays(3));
+
+        assertNull(schedule);
+
+        verify(scheduleRepo, times(1)).findAllByWorkDateBetween(LocalDate.now(), LocalDate.now().plusDays(3));
+    }
+
+    @Test
+    void findByPeriodForEmployee(){
+        when(scheduleRepo.findAllByEmployeesAndWorkDateBetween(any(Employees.class), any(LocalDate.class),
+                any(LocalDate.class))).thenReturn(scheduleList().subList(1, 3));
+
+        List<Schedule> schedule = scheduleManager.findByPeriodForEmployee(employeesList().get(0), LocalDate.now(),
+                LocalDate.now().plusDays(3));
+
+        assertEquals(2, schedule.size());
+
+        verify(scheduleRepo, times(1)).findAllByEmployeesAndWorkDateBetween(any(Employees.class), any(LocalDate.class),
+                any(LocalDate.class));
+    }
+
+    @Test
+    void findByPeriodForEmployee_withNullFoundedSchedule(){
+        when(scheduleRepo.findAllByEmployeesAndWorkDateBetween(any(Employees.class), any(LocalDate.class),
+                any(LocalDate.class))).thenReturn(null);
+
+        List<Schedule> schedule = scheduleManager.findByPeriodForEmployee(employeesList().get(0), LocalDate.now(),
+                LocalDate.now().plusDays(3));
+
+        assertNull(schedule);
+
+        verify(scheduleRepo, times(1)).findAllByEmployeesAndWorkDateBetween(any(Employees.class), any(LocalDate.class),
+                any(LocalDate.class));
     }
 
     @Test
