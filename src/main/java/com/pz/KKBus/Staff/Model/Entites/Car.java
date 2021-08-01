@@ -1,5 +1,6 @@
 package com.pz.KKBus.Staff.Model.Entites;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@JsonIgnoreProperties({"carProperties"})
 public class Car {
 
     @Id

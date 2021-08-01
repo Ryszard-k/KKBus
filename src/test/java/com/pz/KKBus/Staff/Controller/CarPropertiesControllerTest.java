@@ -2,11 +2,12 @@ package com.pz.KKBus.Staff.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pz.KKBus.Security.Services.UserDetailServiceImpl;
-import com.pz.KKBus.Staff.Manager.AvailabilityManager;
 import com.pz.KKBus.Staff.Manager.CarManager;
-import com.pz.KKBus.Staff.Manager.EmployeesManager;
+import com.pz.KKBus.Staff.Manager.CarPropertiesManager;
 import com.pz.KKBus.Staff.Model.Entites.Car;
-import com.pz.KKBus.Staff.Model.Repositories.AvailabilityRepo;
+import com.pz.KKBus.Staff.Model.Entites.CarProperties;
+import com.pz.KKBus.Staff.Model.Enums.State;
+import com.pz.KKBus.Staff.Model.Repositories.CarPropertiesRepo;
 import com.pz.KKBus.Staff.Model.Repositories.CarRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,8 +34,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(CarController.class)
-class CarControllerTest {
+@WebMvcTest(CarPropertiesController.class)
+class CarPropertiesControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,17 +44,28 @@ class CarControllerTest {
     ObjectMapper mapper;
 
     @MockBean
-    private CarManager carManager;
+    private CarPropertiesManager carPropertiesManager;
 
     @MockBean
-    private CarRepo carRepo;
+    private CarPropertiesRepo carPropertiesRepo;
 
     @MockBean
     private UserDetailServiceImpl userDetailService;
 
+    @MockBean
+    private CarManager carManager;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    private List<CarProperties> carPropertiesList() {
+        List<CarProperties> cars = new ArrayList<>();
+        cars.add(new CarProperties((long) 1, carList().get(0), LocalDate.now(), State.Available, "parking1"));
+        cars.add(new CarProperties((long) 2, carList().get(1), LocalDate.now(), State.Broken, "parking2"));
+        cars.add(new CarProperties((long) 3, carList().get(0), LocalDate.now().plusDays(2), State.Available, "parking1"));
+        return cars;
     }
 
     private List<Car> carList() {
@@ -66,29 +78,29 @@ class CarControllerTest {
 
     @Test
     void getAll() throws Exception {
-        when(carManager.findAll()).thenReturn(carList());
+        when(carPropertiesManager.findAll()).thenReturn(carPropertiesList());
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/car")
+                .get("/carProperties")
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = result.getResponse();
         String actualResponseBody = result.getResponse().getContentAsString();
-        String expectedResponseBody = mapper.writeValueAsString(carList());
+        String expectedResponseBody = mapper.writeValueAsString(carPropertiesList());
 
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         assertEquals(actualResponseBody, expectedResponseBody);
 
-        verify(carManager, times(1)).findAll();
+        verify(carPropertiesManager, times(1)).findAll();
     }
 
     @Test
     void getAll_notFound() throws Exception {
-        when(carManager.findAll()).thenReturn(List.of());
+        when(carPropertiesManager.findAll()).thenReturn(List.of());
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/car")
+                .get("/carProperties")
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
@@ -99,34 +111,37 @@ class CarControllerTest {
         assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
         assertEquals(actualResponseBody, expectedResponseBody);
 
-        verify(carManager, times(1)).findAll();
+        verify(carPropertiesManager, times(1)).findAll();
     }
 
     @Test
-    void getById() throws Exception {
+    void getByCar() throws Exception {
         when(carManager.findById(anyLong())).thenReturn(Optional.ofNullable(carList().get(0)));
+        when(carPropertiesManager.findByCar(any(Car.class))).thenReturn(carPropertiesList());
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/car/{id}", carList().get(0).getId())
+                .get("/carProperties/car/{id}", carList().get(0).getId())
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = result.getResponse();
         String actualResponseBody = result.getResponse().getContentAsString();
-        String expectedResponseBody = mapper.writeValueAsString(Optional.ofNullable(carList().get(0)));
+        String expectedResponseBody = mapper.writeValueAsString(carPropertiesList());
 
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         assertEquals(actualResponseBody, expectedResponseBody);
 
         verify(carManager, times(1)).findById(anyLong());
+        verify(carPropertiesManager, times(1)).findByCar(any(Car.class));
     }
 
     @Test
-    void getById_notFound() throws Exception {
+    void getByCar_emptyCar() throws Exception {
         when(carManager.findById(anyLong())).thenReturn(Optional.empty());
+        when(carPropertiesManager.findByCar(any(Car.class))).thenReturn(carPropertiesList());
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/car/{id}", carList().get(0).getId())
+                .get("/carProperties/car/{id}", carList().get(0).getId())
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
@@ -138,35 +153,74 @@ class CarControllerTest {
         assertEquals(actualResponseBody, expectedResponseBody);
 
         verify(carManager, times(1)).findById(anyLong());
+        verify(carPropertiesManager, times(0)).findByCar(any(Car.class));
     }
 
     @Test
-    void addCar() throws Exception {
-        when(carManager.save(any(Car.class))).thenReturn(carList().get(0));
+    void getByDate() throws Exception {
+        when(carPropertiesManager.findByDate(any(LocalDate.class))).thenReturn(carPropertiesList());
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/car")
+                .get("/carProperties/{date}", LocalDate.parse("2021-11-12"))
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(carPropertiesList());
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(carPropertiesManager, times(1)).findByDate(any(LocalDate.class));
+    }
+
+    @Test
+    void getByDate_null() throws Exception {
+        when(carPropertiesManager.findByDate(any(LocalDate.class))).thenReturn(List.of());
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/carProperties/{date}", LocalDate.parse("2021-11-12"))
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = "Bad date";
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(carPropertiesManager, times(1)).findByDate(any(LocalDate.class));
+    }
+
+    @Test
+    void addCarProperties() throws Exception {
+        when(carPropertiesManager.save(any(CarProperties.class))).thenReturn(carPropertiesList().get(0));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/carProperties")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(this.mapper.writeValueAsString(carList().get(0)))
+                .content(this.mapper.writeValueAsString(carPropertiesList().get(0)))
                 .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = result.getResponse();
         String actualResponseBody = result.getResponse().getContentAsString();
-        String expectedResponseBody = mapper.writeValueAsString(Optional.ofNullable(carList().get(0)));
+        String expectedResponseBody = mapper.writeValueAsString(Optional.ofNullable(carPropertiesList().get(0)));
 
         assertEquals(HttpStatus.CREATED.value(), response.getStatus());
         assertEquals(actualResponseBody, expectedResponseBody);
 
-        verify(carManager, times(1)).save(any(Car.class));
+        verify(carPropertiesManager, times(1)).save(any(CarProperties.class));
     }
 
     @Test
-    void addCar_withEmptyCar() throws Exception {
-        when(carManager.save(any(Car.class))).thenReturn(carList().get(0));
+    void addCar_withEmptyCarProperties() throws Exception {
+        when(carPropertiesManager.save(any(CarProperties.class))).thenReturn(carPropertiesList().get(0));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/car")
+                .post("/carProperties")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(null))
                 .contentType(MediaType.APPLICATION_JSON);
@@ -176,48 +230,48 @@ class CarControllerTest {
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
 
-        verify(carManager, times(0)).save(any(Car.class));
+        verify(carPropertiesManager, times(0)).save(any(CarProperties.class));
     }
 
     @Test
-    void deleteCar() throws Exception {
-        when(carManager.findById(anyLong())).thenReturn(Optional.ofNullable(carList().get(0)));
-        when(carManager.deleteById(anyLong())).thenReturn(Optional.of(carList().get(0)));
+    void deleteCarProperties() throws Exception {
+        when(carPropertiesManager.findById(anyLong())).thenReturn(Optional.ofNullable(carPropertiesList().get(0)));
+        when(carPropertiesManager.deleteById(anyLong())).thenReturn(Optional.of(carPropertiesList().get(0)));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .delete("/car/{id}", carList().get(0).getId())
+                .delete("/carProperties/{id}", carList().get(0).getId())
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = result.getResponse();
         String actualResponseBody = result.getResponse().getContentAsString();
-        String expectedResponseBody = mapper.writeValueAsString(carList().get(0));
+        String expectedResponseBody = mapper.writeValueAsString(carPropertiesList().get(0));
 
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         assertEquals(actualResponseBody, expectedResponseBody);
 
-        verify(carManager, times(1)).findById(anyLong());
-        verify(carManager, times(1)).deleteById(anyLong());
+        verify(carPropertiesManager, times(1)).findById(anyLong());
+        verify(carPropertiesManager, times(1)).deleteById(anyLong());
     }
 
     @Test
-    void deleteCar_withNullCar() throws Exception {
-        when(carManager.findById(anyLong())).thenReturn(Optional.empty());
-        when(carManager.deleteById(anyLong())).thenReturn(Optional.of(carList().get(0)));
+    void deleteCar_withNullCarProperties() throws Exception {
+        when(carPropertiesManager.findById(anyLong())).thenReturn(Optional.empty());
+        when(carPropertiesManager.deleteById(anyLong())).thenReturn(Optional.of(carPropertiesList().get(0)));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .delete("/car/{id}", carList().get(0).getId())
+                .delete("/carProperties/{id}", carList().get(0).getId())
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = result.getResponse();
         String actualResponseBody = result.getResponse().getContentAsString();
-        String expectedResponseBody = "Not found car to delete!";
+        String expectedResponseBody = "Not found car properties to delete!";
 
         assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
         assertEquals(actualResponseBody, expectedResponseBody);
 
-        verify(carManager, times(1)).findById(anyLong());
-        verify(carManager, times(0)).deleteById(anyLong());
+        verify(carPropertiesManager, times(1)).findById(anyLong());
+        verify(carPropertiesManager, times(0)).deleteById(anyLong());
     }
 }

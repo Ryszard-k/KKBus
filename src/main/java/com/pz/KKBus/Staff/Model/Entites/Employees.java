@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@JsonIgnoreProperties({"availabilities", "unavailabilities", "schedules"})
+@JsonIgnoreProperties({"availabilities", "unavailabilities", "schedules", "carProperties"})
 public class Employees {
 
     @GeneratedValue(strategy = GenerationType.AUTO)

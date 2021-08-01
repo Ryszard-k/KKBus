@@ -15,7 +15,7 @@ public class CarProperties {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "car", nullable = false)
+    @JoinColumn(name = "car_id", nullable = false)
     private Car car;
 
     @NotNull
@@ -24,10 +24,6 @@ public class CarProperties {
     @Enumerated(EnumType.STRING)
     private State state;
 
-    /*
-    toDo
-    change to entity type
-     */
     private String parking;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
