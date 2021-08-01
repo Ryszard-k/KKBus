@@ -2,12 +2,10 @@ package com.pz.KKBus.Staff.Model.Entites;
 
 import com.sun.istack.NotNull;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Car {
@@ -27,6 +25,10 @@ public class Car {
 
     @NotNull
     private LocalDate manufactureYear;
+
+    @OneToMany(mappedBy = "car", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CarProperties> carProperties;
 
     public Car(Long id, String brand, String model, int seats, LocalDate manufactureYear) {
         this.id = id;
@@ -77,6 +79,14 @@ public class Car {
 
     public void setManufactureYear(LocalDate manufactureYear) {
         this.manufactureYear = manufactureYear;
+    }
+
+    public Set<CarProperties> getCarProperties() {
+        return carProperties;
+    }
+
+    public void setCarProperties(Set<CarProperties> carProperties) {
+        this.carProperties = carProperties;
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.pz.KKBus.Staff.Model.Enums.Role;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -33,6 +34,10 @@ public class Employees {
     @OneToMany(mappedBy = "employeesSchedule", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Schedule> schedules;
+
+    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CarProperties> carProperties;
 
     public Employees(){}
 
@@ -115,5 +120,26 @@ public class Employees {
 
     public void setSchedules(Set<Schedule> schedules) {
         this.schedules = schedules;
+    }
+
+    public Set<CarProperties> getCarProperties() {
+        return carProperties;
+    }
+
+    public void setCarProperties(Set<CarProperties> carProperties) {
+        this.carProperties = carProperties;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Employees)) return false;
+        Employees employees = (Employees) o;
+        return id.equals(employees.id) && firstName.equals(employees.firstName) && lastName.equals(employees.lastName) && birthDate.equals(employees.birthDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, birthDate);
     }
 }
