@@ -36,6 +36,10 @@ public class CarPropertiesManager {
         return carPropertiesRepo.findByDate(date);
     }
 
+    public Optional<CarProperties> findByCarAndDate(Car car, LocalDate date){
+        return carPropertiesRepo.findByCarAndDate(car, date);
+    }
+
     public CarProperties save(CarProperties carProperties){
         return carPropertiesRepo.save(carProperties);
     }

@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@JsonIgnoreProperties({"availabilities", "unavailabilities", "schedules", "carProperties"})
+@JsonIgnoreProperties({"availabilities", "unavailabilities", "schedules", "courses"})
 public class Employees {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,7 +37,7 @@ public class Employees {
 
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CarProperties> carProperties;
+    private Set<Courses> courses;
 
     public Employees(){}
 
@@ -122,12 +122,12 @@ public class Employees {
         this.schedules = schedules;
     }
 
-    public Set<CarProperties> getCarProperties() {
-        return carProperties;
+    public Set<Courses> getCourses() {
+        return courses;
     }
 
-    public void setCarProperties(Set<CarProperties> carProperties) {
-        this.carProperties = carProperties;
+    public void setCourses(Set<Courses> courses) {
+        this.courses = courses;
     }
 
     @Override

@@ -1,11 +1,13 @@
 package com.pz.KKBus.Customer.Model.Entites.Schedules;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pz.KKBus.Staff.Model.Entites.Courses;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalTime;
+import java.util.Set;
 
 @Entity
 public class KatowiceToKrakowDeparture implements Serializable {
@@ -20,9 +22,13 @@ public class KatowiceToKrakowDeparture implements Serializable {
     private LocalTime satSunDeparture;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "krakowToKatowice_id", nullable = false)
+    @JoinColumn(name = "KatowiceToKrakow_id", nullable = false)
     @JsonIgnore
     private KatowiceToKrakow katowiceToKrakow;
+
+    @OneToMany(mappedBy = "katowiceToKrakowDeparture", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Courses> courses;
 
     public KatowiceToKrakowDeparture() {
     }
@@ -64,5 +70,13 @@ public class KatowiceToKrakowDeparture implements Serializable {
 
     public void setKatowiceToKrakow(KatowiceToKrakow katowiceToKrakow) {
         this.katowiceToKrakow = katowiceToKrakow;
+    }
+
+    public Set<Courses> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(Set<Courses> courses) {
+        this.courses = courses;
     }
 }

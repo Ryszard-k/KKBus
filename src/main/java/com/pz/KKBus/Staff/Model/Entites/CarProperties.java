@@ -26,10 +26,6 @@ public class CarProperties {
 
     private String parking;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "driver", nullable = false)
-    private Employees driver;
-
     public CarProperties(Long id, Car car, @NotNull LocalDate date, State state, String parking) {
         this.id = id;
         this.car = car;
@@ -79,14 +75,6 @@ public class CarProperties {
 
     public void setParking(String parking) {
         this.parking = parking;
-    }
-
-    public Employees getDriver() {
-        return driver;
-    }
-
-    public void setDriver(Employees driver) {
-        this.driver = driver;
     }
 
     @Override

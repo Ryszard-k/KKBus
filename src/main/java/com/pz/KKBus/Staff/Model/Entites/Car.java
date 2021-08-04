@@ -32,6 +32,10 @@ public class Car {
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CarProperties> carProperties;
 
+    @OneToMany(mappedBy = "car", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Courses> courses;
+
     public Car(Long id, String brand, String model, int seats, LocalDate manufactureYear) {
         this.id = id;
         this.brand = brand;
@@ -89,6 +93,14 @@ public class Car {
 
     public void setCarProperties(Set<CarProperties> carProperties) {
         this.carProperties = carProperties;
+    }
+
+    public Set<Courses> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(Set<Courses> courses) {
+        this.courses = courses;
     }
 
     @Override
