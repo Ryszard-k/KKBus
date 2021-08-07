@@ -18,11 +18,11 @@ public class Courses {
     @NotNull
     private LocalDate date;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "katowiceToKrakowDeparture_id")
     private KatowiceToKrakowDeparture katowiceToKrakowDeparture;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "krakowToKatowiceDeparture_id")
     private KrakowToKatowiceDeparture krakowToKatowiceDeparture;
 

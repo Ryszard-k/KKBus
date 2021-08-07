@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@JsonIgnoreProperties({"carProperties"})
+@JsonIgnoreProperties({"carProperties", "courses"})
 public class Car {
 
     @Id

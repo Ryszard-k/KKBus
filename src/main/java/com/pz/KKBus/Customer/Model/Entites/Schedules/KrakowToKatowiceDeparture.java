@@ -1,6 +1,7 @@
 package com.pz.KKBus.Customer.Model.Entites.Schedules;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pz.KKBus.Staff.Model.Entites.Courses;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -10,6 +11,7 @@ import java.time.LocalTime;
 import java.util.Set;
 
 @Entity
+@JsonIgnoreProperties({"courses"})
 public class KrakowToKatowiceDeparture implements Serializable {
 
     @Id
@@ -24,7 +26,6 @@ public class KrakowToKatowiceDeparture implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "krakowToKatowice_id", nullable = false)
-    @JsonIgnore
     private KrakowToKatowice krakowToKatowice;
 
     @OneToMany(mappedBy = "krakowToKatowiceDeparture", fetch = FetchType.LAZY,
