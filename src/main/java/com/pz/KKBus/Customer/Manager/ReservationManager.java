@@ -35,6 +35,10 @@ public class ReservationManager {
         return reservationRepo.findById(id);
     }
 
+    public List<Reservation> findByDate(LocalDate date){
+        return reservationRepo.findByDate(date);
+    }
+
     public Reservation save(Reservation reservation, Optional<Customer> customer){
             reservation.setCustomer(customer.get());
             reservation.setStatus(Status.Created);

@@ -1,6 +1,5 @@
 package com.pz.KKBus.Customer.Model.Entites.Schedules;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pz.KKBus.Staff.Model.Entites.Courses;
 import org.springframework.format.annotation.DateTimeFormat;

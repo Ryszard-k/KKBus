@@ -7,6 +7,7 @@ import com.pz.KKBus.Customer.Manager.MailManager;
 import com.pz.KKBus.Customer.Manager.ReservationManager;
 import com.pz.KKBus.Customer.Model.Entites.Customer;
 import com.pz.KKBus.Customer.Model.Entites.Reservation;
+import com.pz.KKBus.Staff.Model.Entites.CarProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -56,6 +57,15 @@ public class ReservationController {
             return new ResponseEntity<>("Bad brand", HttpStatus.NOT_FOUND);
         } else
             return new ResponseEntity<>(foundDate, HttpStatus.OK);
+    }
+
+    @GetMapping("/date/{date}")
+    public ResponseEntity getByDate(@PathVariable String date){
+        List<Reservation> founded = reservationManager.findByDate(LocalDate.parse(date));
+        if(founded.isEmpty()){
+            return new ResponseEntity<>("Bad date", HttpStatus.NOT_FOUND);
+        } else
+            return new ResponseEntity<>(founded, HttpStatus.OK);
     }
 
     @PostMapping(path = "/for-admin/{username}",

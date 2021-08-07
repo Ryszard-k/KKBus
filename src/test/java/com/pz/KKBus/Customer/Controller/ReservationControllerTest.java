@@ -21,6 +21,7 @@ import com.pz.KKBus.Security.Services.UserDetailServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -80,20 +81,29 @@ class ReservationControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void getReservation() throws Exception {
-        Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+    private List<Customer> customerList(){
+        List<Customer> customers = new ArrayList<>();
+        customers.add(new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true));
+        return customers;
+    }
 
+    private List<Reservation> reservations(){
         List<Reservation> reservations = new ArrayList<>();
         reservations.add(new Reservation((long) 1, LocalDate.parse("2020-06-26"), LocalTime.parse("08:30"), 2,
-                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customerList().get(0), Status.Unrealized));
         reservations.add(new Reservation((long) 2, LocalDate.parse("2020-06-30"), LocalTime.parse("08:30"), 1,
-                Route.KrakowToKatowice, "Przystanek2", "Przystanek3", customer, Status.Unrealized));
+                Route.KrakowToKatowice, "Przystanek2", "Przystanek3", customerList().get(0), Status.Unrealized));
         reservations.add(new Reservation((long) 3, LocalDate.parse("2021-03-06"), LocalTime.parse("08:30"), 2,
-                Route.KrakowToKatowice, "Przystanek1", "Przystanek3", customer, Status.Created));
+                Route.KrakowToKatowice, "Przystanek1", "Przystanek3", customerList().get(0), Status.Created));
+        return reservations;
+    }
 
-        when(reservationManager.findAll()).thenReturn(reservations);
+
+    @Test
+    void getReservation() throws Exception {
+
+        when(reservationManager.findAll()).thenReturn(reservations());
 
         mockMvc.perform(get("/reservation"))
                 .andExpect(status().isOk())
@@ -143,6 +153,44 @@ class ReservationControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(reservationManager, times(1)).findById(1L);
+    }
+
+    @Test
+    void getByDate() throws Exception {
+        when(reservationManager.findByDate(ArgumentMatchers.any(LocalDate.class))).thenReturn(reservations());
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/reservation/date/{date}", reservations().get(0).getDate())
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = mapper.writeValueAsString(reservations());
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(reservationManager, times(1)).findByDate(ArgumentMatchers.any(LocalDate.class));
+    }
+
+    @Test
+    void getByDate_notFound() throws Exception {
+        when(reservationManager.findByDate(ArgumentMatchers.any(LocalDate.class))).thenReturn(List.of());
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/reservation/date/{date}", reservations().get(0).getDate())
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = "Bad date";
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(reservationManager, times(1)).findByDate(ArgumentMatchers.any(LocalDate.class));
     }
 
     @Test

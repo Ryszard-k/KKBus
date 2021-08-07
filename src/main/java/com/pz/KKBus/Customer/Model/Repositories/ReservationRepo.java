@@ -6,6 +6,7 @@ import com.pz.KKBus.Customer.Model.Enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,4 +16,6 @@ public interface ReservationRepo extends JpaRepository<Reservation, Long> {
     int countByStatusAndCustomer(Status status, Optional<Customer> customer);
 
     List<Reservation> findByStatus(Status status);
+
+    List<Reservation> findByDate(LocalDate date);
 }

@@ -109,6 +109,30 @@ class ReservationManagerTest {
     }
 
     @Test
+    void findByDate() {
+        when(reservationRepo.findByDate(any(LocalDate.class))).thenReturn(reservationsList());
+
+        List<Reservation> reservations2 = reservationManager.findByDate(LocalDate.now());
+
+        assertEquals(3, reservations2.size());
+        assertEquals(reservationsList().get(0).getId(), reservations2.get(0).getId());
+        assertEquals(reservationsList().get(0).getDate(), reservations2.get(0).getDate());
+        assertEquals(reservationsList().get(0).getCustomer().getFirstName(), reservations2.get(0).getCustomer().getFirstName());
+
+        verify(reservationRepo, times(1)).findByDate(any(LocalDate.class));
+    }
+
+    @Test
+    void findByDate_not_found() {
+        when(reservationRepo.findByDate(any(LocalDate.class))).thenReturn(null);
+
+        List<Reservation> reservations2 = reservationManager.findByDate(LocalDate.now());
+
+        assertNull(reservations2);
+        verify(reservationRepo, times(1)).findByDate(any(LocalDate.class));
+    }
+
+    @Test
     void save() {
         Reservation reservation = new Reservation((long) 4, LocalDate.parse("2021-06-28"), LocalTime.parse("07:30"), 2,
                 Route.KrakowToKatowice, "Przystanek2", "Przystanek4", customerList().get(0), Status.Unrealized);
