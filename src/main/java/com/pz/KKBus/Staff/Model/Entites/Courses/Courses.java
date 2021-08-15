@@ -53,6 +53,9 @@ public class Courses {
         this.driver = driver;
     }
 
+    public Courses() {
+    }
+
     public Long getId() {
         return id;
     }

@@ -48,10 +48,10 @@ public class EmployeesManager {
     @EventListener(ApplicationReadyEvent.class)
     public void fillEmployees(){
         employeesRepo.save(new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, 5000));
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Driver, 5000));
         employeesRepo.save(new Employees((long) 2,"Anna",
                 "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, 3000));
         employeesRepo.save(new Employees((long) 3,"Andrzej",
-                "Konrad", LocalDate.parse("1988-05-20"), Role.Driver, 4000));
+                "Konrad", LocalDate.parse("1988-05-20"), Role.Admin, 4000));
     }
 }

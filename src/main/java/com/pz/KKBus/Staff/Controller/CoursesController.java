@@ -90,7 +90,9 @@ public class CoursesController implements CrudControllerMethods<Courses>{
     )
     public ResponseEntity<Object> add(@RequestBody Courses object) {
             Optional<CarProperties> carProperties = carPropertiesManager.findByCarAndDate(object.getCar(), object.getDate());
-            if (carProperties.isPresent() && carProperties.get().getState().equals(State.Available)) {
+            Optional<Employees> driver = employeesManager.findById(object.getDriver().getId());
+            if (carProperties.isPresent() && carProperties.get().getState().equals(State.Available) &&
+                    driver.get().getRole().equals(Role.Driver)) {
                 switch (object.getRoute()){
                     case KatowiceToKrakow:
                         List<KatowiceToKrakowDeparture> kat = katowiceToKrakowDepartureManager
