@@ -6,6 +6,7 @@ import com.pz.KKBus.Customer.Model.Repositories.SchedulesRepo.KatowiceToKrakowDe
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +33,14 @@ public class KatowiceToKrakowDepartureManager {
 
     public Optional<KatowiceToKrakowDeparture> findByIdFromKatowiceToKrakowDeparture(Long id){
         return katowiceToKrakowDepartureRepo.findById(id);
+    }
+
+    public List<KatowiceToKrakowDeparture> findByMonFriDepartureContains(LocalTime time){
+        return katowiceToKrakowDepartureRepo.findByMonFriDepartureContains(time);
+    }
+
+    public List<KatowiceToKrakowDeparture> findBySatSunDepartureContains(LocalTime time){
+        return katowiceToKrakowDepartureRepo.findBySatSunDepartureContains(time);
     }
 
     public KatowiceToKrakowDeparture saveInKatowiceToKrakowDeparture(

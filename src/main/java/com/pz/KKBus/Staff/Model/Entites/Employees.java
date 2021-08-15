@@ -1,6 +1,10 @@
 package com.pz.KKBus.Staff.Model.Entites;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.pz.KKBus.Staff.Model.Entites.Courses.Courses;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Availability;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Schedule;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Unavailability;
 import com.pz.KKBus.Staff.Model.Enums.Role;
 
 import javax.persistence.*;

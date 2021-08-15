@@ -1,11 +1,10 @@
 package com.pz.KKBus.Staff.Manager;
 
-import com.pz.KKBus.Staff.Model.Entites.Availability;
+import com.pz.KKBus.Staff.Manager.Schedule.ScheduleManager;
 import com.pz.KKBus.Staff.Model.Entites.Employees;
-import com.pz.KKBus.Staff.Model.Entites.Schedule;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Schedule;
 import com.pz.KKBus.Staff.Model.Enums.Role;
-import com.pz.KKBus.Staff.Model.Repositories.AvailabilityRepo;
-import com.pz.KKBus.Staff.Model.Repositories.ScheduleRepo;
+import com.pz.KKBus.Staff.Model.Repositories.Schedule.ScheduleRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

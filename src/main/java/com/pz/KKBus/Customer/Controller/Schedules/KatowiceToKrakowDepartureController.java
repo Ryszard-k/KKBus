@@ -29,7 +29,7 @@ public class KatowiceToKrakowDepartureController {
         this.reservationManager = reservationManager;
     }
 
-    @GetMapping
+    @GetMapping()
     public ResponseEntity getSchedules(){
         Iterable<KatowiceToKrakowDeparture> foundSchedules = katowiceToKrakowDepartureManager
                 .findAllFromKatowiceToKrakowDeparture();

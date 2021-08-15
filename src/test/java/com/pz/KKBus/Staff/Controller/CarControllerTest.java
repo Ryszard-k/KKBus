@@ -2,11 +2,8 @@ package com.pz.KKBus.Staff.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pz.KKBus.Security.Services.UserDetailServiceImpl;
-import com.pz.KKBus.Staff.Manager.AvailabilityManager;
 import com.pz.KKBus.Staff.Manager.CarManager;
-import com.pz.KKBus.Staff.Manager.EmployeesManager;
 import com.pz.KKBus.Staff.Model.Entites.Car;
-import com.pz.KKBus.Staff.Model.Repositories.AvailabilityRepo;
 import com.pz.KKBus.Staff.Model.Repositories.CarRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

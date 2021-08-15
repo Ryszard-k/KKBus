@@ -1,7 +1,7 @@
 package com.pz.KKBus.Customer.Model.Entites.Schedules;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.pz.KKBus.Staff.Model.Entites.Courses;
+import com.pz.KKBus.Staff.Model.Entites.Courses.Courses;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -10,7 +10,7 @@ import java.time.LocalTime;
 import java.util.Set;
 
 @Entity
-@JsonIgnoreProperties({"courses"})
+@JsonIgnoreProperties({"katowiceToKrakow"})
 public class KatowiceToKrakowDeparture implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +25,6 @@ public class KatowiceToKrakowDeparture implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "KatowiceToKrakow_id", nullable = false)
     private KatowiceToKrakow katowiceToKrakow;
-
-    @OneToMany(mappedBy = "katowiceToKrakowDeparture", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Courses> courses;
 
     public KatowiceToKrakowDeparture() {
     }
@@ -70,13 +66,5 @@ public class KatowiceToKrakowDeparture implements Serializable {
 
     public void setKatowiceToKrakow(KatowiceToKrakow katowiceToKrakow) {
         this.katowiceToKrakow = katowiceToKrakow;
-    }
-
-    public Set<Courses> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(Set<Courses> courses) {
-        this.courses = courses;
     }
 }

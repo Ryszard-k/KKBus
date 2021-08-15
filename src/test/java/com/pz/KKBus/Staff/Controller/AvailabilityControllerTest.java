@@ -1,17 +1,14 @@
 package com.pz.KKBus.Staff.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pz.KKBus.Customer.Controller.RewardController;
-import com.pz.KKBus.Customer.Model.Entites.Customer;
-import com.pz.KKBus.Customer.Model.Entites.Reward;
-import com.pz.KKBus.Customer.Model.Enums.RewardStatus;
 import com.pz.KKBus.Security.Services.UserDetailServiceImpl;
-import com.pz.KKBus.Staff.Manager.AvailabilityManager;
+import com.pz.KKBus.Staff.Controller.Schedule.AvailabilityController;
+import com.pz.KKBus.Staff.Manager.Schedule.AvailabilityManager;
 import com.pz.KKBus.Staff.Manager.EmployeesManager;
-import com.pz.KKBus.Staff.Model.Entites.Availability;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Availability;
 import com.pz.KKBus.Staff.Model.Entites.Employees;
 import com.pz.KKBus.Staff.Model.Enums.Role;
-import com.pz.KKBus.Staff.Model.Repositories.AvailabilityRepo;
+import com.pz.KKBus.Staff.Model.Repositories.Schedule.AvailabilityRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;

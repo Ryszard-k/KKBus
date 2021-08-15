@@ -1,8 +1,9 @@
 package com.pz.KKBus.Staff.Model.Repositories;
 
 import com.pz.KKBus.Staff.Model.Entites.Employees;
-import com.pz.KKBus.Staff.Model.Entites.Schedule;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Schedule;
 import com.pz.KKBus.Staff.Model.Enums.Role;
+import com.pz.KKBus.Staff.Model.Repositories.Schedule.ScheduleRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;

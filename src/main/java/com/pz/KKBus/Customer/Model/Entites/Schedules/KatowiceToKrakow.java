@@ -1,5 +1,6 @@
 package com.pz.KKBus.Customer.Model.Entites.Schedules;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 @Entity
+@JsonIgnoreProperties({"katowiceToKrakowDeparture"})
 public class KatowiceToKrakow implements Serializable {
 
     @Id

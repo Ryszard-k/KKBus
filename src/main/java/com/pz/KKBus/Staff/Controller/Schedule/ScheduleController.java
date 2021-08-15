@@ -1,9 +1,9 @@
-package com.pz.KKBus.Staff.Controller;
+package com.pz.KKBus.Staff.Controller.Schedule;
 
 import com.pz.KKBus.Staff.Manager.EmployeesManager;
-import com.pz.KKBus.Staff.Manager.ScheduleManager;
+import com.pz.KKBus.Staff.Manager.Schedule.ScheduleManager;
 import com.pz.KKBus.Staff.Model.Entites.Employees;
-import com.pz.KKBus.Staff.Model.Entites.Schedule;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Schedule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

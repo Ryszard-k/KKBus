@@ -1,5 +1,6 @@
-package com.pz.KKBus.Staff.Model.Entites;
+package com.pz.KKBus.Staff.Model.Entites.Schedule;
 
+import com.pz.KKBus.Staff.Model.Entites.Employees;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;

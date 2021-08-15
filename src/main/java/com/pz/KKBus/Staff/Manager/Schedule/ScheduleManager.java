@@ -1,18 +1,14 @@
-package com.pz.KKBus.Staff.Manager;
+package com.pz.KKBus.Staff.Manager.Schedule;
 
 import com.pz.KKBus.Staff.Model.Entites.Employees;
-import com.pz.KKBus.Staff.Model.Entites.Schedule;
-import com.pz.KKBus.Staff.Model.Entites.Unavailability;
-import com.pz.KKBus.Staff.Model.Repositories.ScheduleRepo;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Schedule;
+import com.pz.KKBus.Staff.Model.Repositories.Schedule.ScheduleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ScheduleManager {

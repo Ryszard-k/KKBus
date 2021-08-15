@@ -1,14 +1,22 @@
-package com.pz.KKBus.Staff.Model.Entites;
+package com.pz.KKBus.Staff.Model.Entites.Courses;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pz.KKBus.Customer.Model.Entites.Schedules.KatowiceToKrakowDeparture;
 import com.pz.KKBus.Customer.Model.Entites.Schedules.KrakowToKatowiceDeparture;
+import com.pz.KKBus.Customer.Model.Enums.Route;
+import com.pz.KKBus.Staff.Model.Entites.Car;
+import com.pz.KKBus.Staff.Model.Entites.Employees;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
+@JsonIgnoreProperties({"katowiceToKrakowDeparture", "krakowToKatowiceDeparture"})
 public class Courses {
 
     @Id
@@ -18,13 +26,12 @@ public class Courses {
     @NotNull
     private LocalDate date;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "katowiceToKrakowDeparture_id")
-    private KatowiceToKrakowDeparture katowiceToKrakowDeparture;
+    @NotNull
+    private Route route;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "krakowToKatowiceDeparture_id")
-    private KrakowToKatowiceDeparture krakowToKatowiceDeparture;
+    @NotNull
+    @DateTimeFormat(pattern = "hh:mm")
+    private LocalTime departureTime;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "car_id", nullable = false)
@@ -34,18 +41,16 @@ public class Courses {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employees driver;
 
+    //onetone
     /*make reports*/
 
-    public Courses(Long id, @NotNull LocalDate date, KatowiceToKrakowDeparture katowiceToKrakowDeparture, KrakowToKatowiceDeparture krakowToKatowiceDeparture, Car car, Employees driver) {
+    public Courses(Long id, @NotNull LocalDate date, @NotNull Route route, @NotNull LocalTime departureTime, Car car, Employees driver) {
         this.id = id;
         this.date = date;
-        this.katowiceToKrakowDeparture = katowiceToKrakowDeparture;
-        this.krakowToKatowiceDeparture = krakowToKatowiceDeparture;
+        this.route = route;
+        this.departureTime = departureTime;
         this.car = car;
         this.driver = driver;
-    }
-
-    public Courses() {
     }
 
     public Long getId() {
@@ -64,20 +69,20 @@ public class Courses {
         this.date = date;
     }
 
-    public KatowiceToKrakowDeparture getKatowiceToKrakowDeparture() {
-        return katowiceToKrakowDeparture;
+    public Route getRoute() {
+        return route;
     }
 
-    public void setKatowiceToKrakowDeparture(KatowiceToKrakowDeparture katowiceToKrakowDeparture) {
-        this.katowiceToKrakowDeparture = katowiceToKrakowDeparture;
+    public void setRoute(Route route) {
+        this.route = route;
     }
 
-    public KrakowToKatowiceDeparture getKrakowToKatowiceDeparture() {
-        return krakowToKatowiceDeparture;
+    public LocalTime getDepartureTime() {
+        return departureTime;
     }
 
-    public void setKrakowToKatowiceDeparture(KrakowToKatowiceDeparture krakowToKatowiceDeparture) {
-        this.krakowToKatowiceDeparture = krakowToKatowiceDeparture;
+    public void setDepartureTime(LocalTime departureTime) {
+        this.departureTime = departureTime;
     }
 
     public Car getCar() {

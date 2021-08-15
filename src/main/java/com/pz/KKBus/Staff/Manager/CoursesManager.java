@@ -1,20 +1,33 @@
 package com.pz.KKBus.Staff.Manager;
 
+import com.pz.KKBus.Customer.Model.Entites.Schedules.KrakowToKatowice;
+import com.pz.KKBus.Customer.Model.Entites.Schedules.KrakowToKatowiceDeparture;
 import com.pz.KKBus.Staff.Model.Entites.Car;
-import com.pz.KKBus.Staff.Model.Entites.Courses;
+import com.pz.KKBus.Staff.Model.Entites.CarProperties;
+import com.pz.KKBus.Staff.Model.Entites.Courses.Courses;
 import com.pz.KKBus.Staff.Model.Entites.Employees;
-import com.pz.KKBus.Staff.Model.Repositories.CoursesRepo;
+import com.pz.KKBus.Staff.Model.Enums.Role;
+import com.pz.KKBus.Staff.Model.Enums.State;
+import com.pz.KKBus.Staff.Model.Repositories.CarPropertiesRepo;
+import com.pz.KKBus.Staff.Model.Repositories.CarRepo;
+import com.pz.KKBus.Staff.Model.Repositories.Courses.CoursesRepo;
+import com.pz.KKBus.Staff.Model.Repositories.EmployeesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class CoursesManager {
 
     private final CoursesRepo coursesRepo;
-
     @Autowired
     public CoursesManager(CoursesRepo coursesRepo) {
         this.coursesRepo = coursesRepo;

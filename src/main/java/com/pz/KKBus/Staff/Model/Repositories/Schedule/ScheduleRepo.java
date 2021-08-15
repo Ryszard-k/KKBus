@@ -1,7 +1,7 @@
-package com.pz.KKBus.Staff.Model.Repositories;
+package com.pz.KKBus.Staff.Model.Repositories.Schedule;
 
 import com.pz.KKBus.Staff.Model.Entites.Employees;
-import com.pz.KKBus.Staff.Model.Entites.Schedule;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

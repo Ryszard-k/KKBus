@@ -1,9 +1,6 @@
 package com.pz.KKBus.Staff.Manager;
 
-import com.pz.KKBus.Customer.Model.Entites.Reservation;
-import com.pz.KKBus.Customer.Model.Entites.Reward;
 import com.pz.KKBus.Staff.Model.Entites.Car;
-import com.pz.KKBus.Staff.Model.Entites.Schedule;
 import com.pz.KKBus.Staff.Model.Repositories.CarRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +11,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

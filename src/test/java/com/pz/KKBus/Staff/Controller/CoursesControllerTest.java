@@ -3,6 +3,7 @@ package com.pz.KKBus.Staff.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pz.KKBus.Customer.Model.Entites.Schedules.KrakowToKatowice;
 import com.pz.KKBus.Customer.Model.Entites.Schedules.KrakowToKatowiceDeparture;
+import com.pz.KKBus.Customer.Model.Enums.Route;
 import com.pz.KKBus.Security.Services.UserDetailServiceImpl;
 import com.pz.KKBus.Staff.Manager.CarManager;
 import com.pz.KKBus.Staff.Manager.CarPropertiesManager;
@@ -10,11 +11,11 @@ import com.pz.KKBus.Staff.Manager.CoursesManager;
 import com.pz.KKBus.Staff.Manager.EmployeesManager;
 import com.pz.KKBus.Staff.Model.Entites.Car;
 import com.pz.KKBus.Staff.Model.Entites.CarProperties;
-import com.pz.KKBus.Staff.Model.Entites.Courses;
+import com.pz.KKBus.Staff.Model.Entites.Courses.Courses;
 import com.pz.KKBus.Staff.Model.Entites.Employees;
 import com.pz.KKBus.Staff.Model.Enums.Role;
 import com.pz.KKBus.Staff.Model.Enums.State;
-import com.pz.KKBus.Staff.Model.Repositories.CoursesRepo;
+import com.pz.KKBus.Staff.Model.Repositories.Courses.CoursesRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +37,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -73,24 +75,29 @@ class CoursesControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    private List<Courses> coursesList() {
-        List<Courses> courses = new ArrayList<>();
+    private List<KrakowToKatowiceDeparture> KrakowToKatowiceDepartureList() {
+        List<KrakowToKatowiceDeparture> krakowToKatowiceDepartures = new ArrayList<>();
         KrakowToKatowice krakowToKatowice = new KrakowToKatowice((long) 1, "Przystanek1", null
                 , 0, 0);
         KrakowToKatowice krakowToKatowice1 = new KrakowToKatowice((long) 2, "Przystanek2", null
                 , 10, 40);
 
-        KrakowToKatowiceDeparture krakowToKatowiceDeparture = new KrakowToKatowiceDeparture((long) 1, LocalTime.parse("08:01"),
-                LocalTime.parse("11:47"), krakowToKatowice);
-        KrakowToKatowiceDeparture krakowToKatowiceDeparture1 = new KrakowToKatowiceDeparture((long) 2, LocalTime.parse("13:01"),
-                LocalTime.parse("16:47"), krakowToKatowice1);
+        krakowToKatowiceDepartures.add(new KrakowToKatowiceDeparture((long) 1, LocalTime.parse("08:01"),
+                LocalTime.parse("11:47"), krakowToKatowice));
+        krakowToKatowiceDepartures.add(new KrakowToKatowiceDeparture((long) 2, LocalTime.parse("13:01"),
+                LocalTime.parse("16:47"), krakowToKatowice1));
 
-        courses.add(new Courses((long) 1, LocalDate.parse("2021-04-23"),null ,
-                krakowToKatowiceDeparture , carList().get(1), employeesList().get(0)));
-        courses.add(new Courses((long) 2, LocalDate.parse("2021-04-23"),null ,
-                null , carList().get(1), employeesList().get(0)));
-        courses.add(new Courses((long) 3, LocalDate.parse("2021-04-23"),null ,
-                krakowToKatowiceDeparture1 , carList().get(1), employeesList().get(0)));
+        return krakowToKatowiceDepartures;
+    }
+    private List<Courses> coursesList() {
+        List<Courses> courses = new ArrayList<>();
+
+        courses.add(new Courses((long) 1, LocalDate.parse("2021-04-23"), Route.KatowiceToKrakow,
+                LocalTime.parse("8:01"), carList().get(1), employeesList().get(0)));
+        courses.add(new Courses((long) 2, LocalDate.parse("2021-04-23"),Route.KatowiceToKrakow,
+                LocalTime.parse("11:47") , carList().get(1), employeesList().get(0)));
+        courses.add(new Courses((long) 3, LocalDate.parse("2021-04-23"),Route.KrakowToKatowice ,
+                LocalTime.parse("16:47"), carList().get(1), employeesList().get(0)));
         return courses;
     }
 
@@ -199,7 +206,7 @@ class CoursesControllerTest {
 
     @Test
     void findByDriver() throws Exception {
-        when(employeesManager.findById(anyLong())).thenReturn(Optional.ofNullable(employeesList().get(0)));
+        when(employeesManager.findById(anyLong())).thenReturn(Optional.ofNullable(employeesList().get(2)));
         when(coursesManager.findByDriver(any(Employees.class))).thenReturn(coursesList());
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -221,6 +228,27 @@ class CoursesControllerTest {
     @Test
     void findByDriver_emptyDriver() throws Exception {
         when(employeesManager.findById(anyLong())).thenReturn(Optional.empty());
+        when(coursesManager.findByDriver(any(Employees.class))).thenReturn(coursesList());
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/courses/driver/{id}", employeesList().get(0).getId())
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String actualResponseBody = result.getResponse().getContentAsString();
+        String expectedResponseBody = "Bad id";
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertEquals(actualResponseBody, expectedResponseBody);
+
+        verify(employeesManager, times(1)).findById(anyLong());
+        verify(coursesManager, times(0)).findByDriver(any(Employees.class));
+    }
+
+    @Test
+    void findByDriver_notDriver() throws Exception {
+        when(employeesManager.findById(anyLong())).thenReturn(Optional.ofNullable(employeesList().get(1)));
         when(coursesManager.findByDriver(any(Employees.class))).thenReturn(coursesList());
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders

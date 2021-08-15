@@ -1,9 +1,7 @@
-package com.pz.KKBus.Staff.Manager;
+package com.pz.KKBus.Staff.Manager.Schedule;
 
-import com.pz.KKBus.Staff.Model.Entites.Availability;
-import com.pz.KKBus.Staff.Model.Entites.Unavailability;
-import com.pz.KKBus.Staff.Model.Repositories.AvailabilityRepo;
-import com.pz.KKBus.Staff.Model.Repositories.UnavailabilityRepo;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Unavailability;
+import com.pz.KKBus.Staff.Model.Repositories.Schedule.UnavailabilityRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

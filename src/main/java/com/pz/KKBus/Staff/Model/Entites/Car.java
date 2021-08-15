@@ -1,6 +1,7 @@
 package com.pz.KKBus.Staff.Model.Entites;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.pz.KKBus.Staff.Model.Entites.Courses.Courses;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;

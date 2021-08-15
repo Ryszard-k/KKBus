@@ -1,9 +1,10 @@
 package com.pz.KKBus.Staff.Manager;
 
-import com.pz.KKBus.Staff.Model.Entites.Availability;
+import com.pz.KKBus.Staff.Manager.Schedule.AvailabilityManager;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Availability;
 import com.pz.KKBus.Staff.Model.Entites.Employees;
 import com.pz.KKBus.Staff.Model.Enums.Role;
-import com.pz.KKBus.Staff.Model.Repositories.AvailabilityRepo;
+import com.pz.KKBus.Staff.Model.Repositories.Schedule.AvailabilityRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;

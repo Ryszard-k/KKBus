@@ -1,14 +1,10 @@
-package com.pz.KKBus.Staff.Manager;
+package com.pz.KKBus.Staff.Manager.Schedule;
 
-import com.pz.KKBus.Customer.Model.Entites.Customer;
-import com.pz.KKBus.Customer.Model.Entites.Reward;
-import com.pz.KKBus.Customer.Model.Enums.RewardStatus;
-import com.pz.KKBus.Staff.Model.Entites.Availability;
-import com.pz.KKBus.Staff.Model.Repositories.AvailabilityRepo;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Availability;
+import com.pz.KKBus.Staff.Model.Repositories.Schedule.AvailabilityRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 

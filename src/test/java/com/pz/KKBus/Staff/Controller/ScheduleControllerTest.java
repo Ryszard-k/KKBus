@@ -1,16 +1,14 @@
 package com.pz.KKBus.Staff.Controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pz.KKBus.Security.Services.UserDetailServiceImpl;
+import com.pz.KKBus.Staff.Controller.Schedule.ScheduleController;
 import com.pz.KKBus.Staff.Manager.EmployeesManager;
-import com.pz.KKBus.Staff.Manager.ScheduleManager;
-import com.pz.KKBus.Staff.Manager.UnavailabilityManager;
+import com.pz.KKBus.Staff.Manager.Schedule.ScheduleManager;
 import com.pz.KKBus.Staff.Model.Entites.Employees;
-import com.pz.KKBus.Staff.Model.Entites.Schedule;
+import com.pz.KKBus.Staff.Model.Entites.Schedule.Schedule;
 import com.pz.KKBus.Staff.Model.Enums.Role;
-import com.pz.KKBus.Staff.Model.Repositories.ScheduleRepo;
-import com.pz.KKBus.Staff.Model.Repositories.UnavailabilityRepo;
+import com.pz.KKBus.Staff.Model.Repositories.Schedule.ScheduleRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +33,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.web.servlet.function.RequestPredicates.accept;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(ScheduleController.class)
