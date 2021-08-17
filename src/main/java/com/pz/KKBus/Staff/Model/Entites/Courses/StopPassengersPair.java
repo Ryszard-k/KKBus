@@ -1,8 +1,15 @@
 package com.pz.KKBus.Staff.Model.Entites.Courses;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
+@JsonIgnoreProperties({"report"})
 public class StopPassengersPair {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -12,8 +19,8 @@ public class StopPassengersPair {
     private String stop;
     private int passengers;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "report_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_id")
     private Report report;
 
     public StopPassengersPair(Long id, String stop, int passengers, Report report) {
@@ -56,5 +63,18 @@ public class StopPassengersPair {
 
     public void setReport(Report report) {
         this.report = report;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StopPassengersPair)) return false;
+        StopPassengersPair that = (StopPassengersPair) o;
+        return passengers == that.passengers && id.equals(that.id) && stop.equals(that.stop);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, stop, passengers);
     }
 }

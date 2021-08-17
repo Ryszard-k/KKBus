@@ -45,6 +45,10 @@ public class ReservationManager {
             return reservationRepo.save(reservation);
     }
 
+    public Reservation cleanSave(Reservation reservation){
+        return reservationRepo.save(reservation);
+    }
+
     public Optional<Reservation> deleteById(Long id){
         Optional<Reservation> deleted = reservationRepo.findById(id);
         reservationRepo.deleteById(id);

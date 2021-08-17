@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@JsonIgnoreProperties({"katowiceToKrakowDeparture", "krakowToKatowiceDeparture"})
+@JsonIgnoreProperties({"katowiceToKrakowDeparture", "krakowToKatowiceDeparture", "report"})
 public class Courses {
 
     @Id
@@ -27,6 +27,7 @@ public class Courses {
     private LocalDate date;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private Route route;
 
     @NotNull
@@ -41,8 +42,9 @@ public class Courses {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employees driver;
 
-    //onetone
-    /*make reports*/
+    @OneToOne(mappedBy = "courses", cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
+    private Report report;
 
     public Courses(Long id, @NotNull LocalDate date, @NotNull Route route, @NotNull LocalTime departureTime, Car car, Employees driver) {
         this.id = id;
@@ -102,6 +104,14 @@ public class Courses {
 
     public void setDriver(Employees driver) {
         this.driver = driver;
+    }
+
+    public Report getReport() {
+        return report;
+    }
+
+    public void setReport(Report report) {
+        this.report = report;
     }
 
     @Override
