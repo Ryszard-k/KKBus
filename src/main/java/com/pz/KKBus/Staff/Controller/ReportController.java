@@ -24,13 +24,11 @@ public class ReportController implements CrudControllerMethods<ReportWithReserva
 
     private final ReportManager reportManager;
     private final ReservationManager reservationManager;
-    private final StopPassengersPairManager stopPassengersPairManager;
 
     @Autowired
-    public ReportController(ReportManager reportManager, ReservationManager reservationManager, StopPassengersPairManager stopPassengersPairManager) {
+    public ReportController(ReportManager reportManager, ReservationManager reservationManager) {
         this.reportManager = reportManager;
         this.reservationManager = reservationManager;
-        this.stopPassengersPairManager = stopPassengersPairManager;
     }
 
     @Override
@@ -47,6 +45,16 @@ public class ReportController implements CrudControllerMethods<ReportWithReserva
     @GetMapping("/{id}")
     public ResponseEntity getById(@PathVariable Long id) {
         Optional<Report> founded = reportManager.findById(id);
+        if(founded.isEmpty()){
+            return new ResponseEntity<>("Bad id", HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(founded, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/course/{id}")
+    public ResponseEntity getByCourse(@PathVariable Long id) {
+        Optional<Report> founded = reportManager.findByCourses(id);
         if(founded.isEmpty()){
             return new ResponseEntity<>("Bad id", HttpStatus.NOT_FOUND);
         } else {

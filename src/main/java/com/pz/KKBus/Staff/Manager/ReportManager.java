@@ -2,14 +2,12 @@ package com.pz.KKBus.Staff.Manager;
 
 import com.pz.KKBus.Staff.Model.Entites.Courses.Courses;
 import com.pz.KKBus.Staff.Model.Entites.Courses.Report;
-import com.pz.KKBus.Staff.Model.Entites.Courses.StopPassengersPair;
 import com.pz.KKBus.Staff.Model.Repositories.Courses.ReportRepo;
 import com.pz.KKBus.Staff.Model.Repositories.Courses.StopPassengersPairRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 

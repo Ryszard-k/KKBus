@@ -28,19 +28,19 @@ public class Employees {
     private int salary;
 
     @OneToMany(mappedBy = "employees", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL, orphanRemoval = true)
+            cascade = CascadeType.ALL)
     private Set<Availability> availabilities;
 
     @OneToMany(mappedBy = "employeesUn", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL, orphanRemoval = true)
+            cascade = CascadeType.ALL)
     private Set<Unavailability> unavailabilities;
 
     @OneToMany(mappedBy = "employeesSchedule", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL, orphanRemoval = true)
+            cascade = CascadeType.ALL)
     private Set<Schedule> schedules;
 
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL, orphanRemoval = true)
+            cascade = CascadeType.ALL)
     private Set<Courses> courses;
 
     public Employees(){}

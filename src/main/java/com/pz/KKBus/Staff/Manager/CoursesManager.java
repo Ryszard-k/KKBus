@@ -2,9 +2,11 @@ package com.pz.KKBus.Staff.Manager;
 
 import com.pz.KKBus.Customer.Model.Entites.Schedules.KrakowToKatowice;
 import com.pz.KKBus.Customer.Model.Entites.Schedules.KrakowToKatowiceDeparture;
+import com.pz.KKBus.Customer.Model.Enums.Route;
 import com.pz.KKBus.Staff.Model.Entites.Car;
 import com.pz.KKBus.Staff.Model.Entites.CarProperties;
 import com.pz.KKBus.Staff.Model.Entites.Courses.Courses;
+import com.pz.KKBus.Staff.Model.Entites.Courses.Report;
 import com.pz.KKBus.Staff.Model.Entites.Employees;
 import com.pz.KKBus.Staff.Model.Enums.Role;
 import com.pz.KKBus.Staff.Model.Enums.State;
@@ -47,6 +49,14 @@ public class CoursesManager {
 
     public List<Courses> findByCar(Car car){
         return coursesRepo.findByCar(car);
+    }
+
+    public List<Report> findByDate(LocalDate date, Route route){
+        List<Report> reports = coursesRepo.findByDate(date, route);
+        if (!reports.isEmpty()){
+            return reports;
+        } else
+            return List.of();
     }
 
     public Courses save(Courses course) {

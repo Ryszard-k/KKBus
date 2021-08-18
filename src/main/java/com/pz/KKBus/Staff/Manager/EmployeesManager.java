@@ -30,6 +30,10 @@ public class EmployeesManager {
         return employeesRepo.findByLastName(lastName);
     }
 
+    public List<Employees> findByRole(Role role){
+        return employeesRepo.findByRole(role);
+    }
+
     public Optional<Employees> findById(Long id){
         return employeesRepo.findById(id);
     }
