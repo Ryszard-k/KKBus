@@ -2,6 +2,7 @@ package com.pz.KKBus.Customer.Model.Entites;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.pz.KKBus.Customer.Model.Enums.RewardStatus;
 import com.sun.istack.NotNull;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
+@JsonIgnoreProperties({"customerReward"})
 public class Reward {
 
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -174,7 +174,7 @@ class RewardControllerTest {
 
         verify(rewardManager, times(1)).findById(anyLong());
     }
-
+/*
     @Test
     void addReward() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
@@ -231,7 +231,7 @@ class RewardControllerTest {
 
         verify(customerManager, times(1)).findByUsername(customer.getUsername());
         verify(rewardManager, times(0)).save(reward, Optional.of(customer));
-    }
+    }*/
 
     @Test
     void addReward_nullReward_returnFalse() throws Exception {

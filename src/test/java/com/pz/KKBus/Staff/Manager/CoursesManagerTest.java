@@ -59,7 +59,7 @@ class CoursesManagerTest {
         List<Courses> courses = new ArrayList<>();
 
         courses.add(new Courses((long) 1, LocalDate.parse("2021-04-23"), Route.KatowiceToKrakow,
-                LocalTime.parse("8:01"), carList().get(1), employeesList().get(0)));
+                LocalTime.parse("08:01"), carList().get(1), employeesList().get(0)));
         courses.add(new Courses((long) 2, LocalDate.parse("2021-04-23"),Route.KatowiceToKrakow,
                 LocalTime.parse("11:47") , carList().get(1), employeesList().get(0)));
         courses.add(new Courses((long) 3, LocalDate.parse("2021-04-23"),Route.KrakowToKatowice ,
