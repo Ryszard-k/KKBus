@@ -4,44 +4,50 @@ import com.pz.KKBus.Customer.Model.Enums.Route;
 import com.pz.KKBus.Staff.Manager.*;
 import com.pz.KKBus.Staff.Model.Entites.Car;
 import com.pz.KKBus.Staff.Model.Entites.Courses.Report;
+import com.pz.KKBus.Staff.Model.Entites.Courses.StopPassengersPair;
 import com.pz.KKBus.Staff.Model.Entites.Employees;
 import com.pz.KKBus.Staff.Model.Enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/summations")
 public class SummationsController {
 
-    private final ReportManager reportManager;
-    private final StopPassengersPairManager stopPassengersPairManager;
-    private final CoursesManager coursesManager;
     private final EmployeesManager employeesManager;
     private final CarManager carManager;
+    private final ReportManager reportManager;
 
     @Autowired
-    public SummationsController(ReportManager reportManager, StopPassengersPairManager stopPassengersPairManager, CoursesManager coursesManager, EmployeesManager employeesManager, CarManager carManager) {
-        this.reportManager = reportManager;
-        this.stopPassengersPairManager = stopPassengersPairManager;
-        this.coursesManager = coursesManager;
+    public SummationsController(EmployeesManager employeesManager, CarManager carManager, ReportManager reportManager) {
         this.employeesManager = employeesManager;
         this.carManager = carManager;
+        this.reportManager = reportManager;
     }
 
     @GetMapping("/daily/{date}")
-    public ResponseEntity daily(String date) {
-        List<Report> ktToKrk = coursesManager.findByDate(LocalDate.parse(date), Route.KatowiceToKrakow);
-        List<Report> krkToKt = coursesManager.findByDate(LocalDate.parse(date), Route.KrakowToKatowice);
+    public ResponseEntity daily(@PathVariable String date) {
+        List<Report> ktToKrk = reportManager.findAll().stream()
+                .filter(k -> k.getCourses().getDate().equals(LocalDate.parse(date)))
+                .filter(k -> k.getCourses().getRoute().equals(Route.KatowiceToKrakow))
+                .collect(Collectors.toList());
+        List<Report> krkToKt = reportManager.findAll().stream()
+                .filter(k -> k.getCourses().getDate().equals(LocalDate.parse(date)))
+                .filter(k -> k.getCourses().getRoute().equals(Route.KrakowToKatowice))
+                .collect(Collectors.toList());
 
         List<SummationsModel> finish = dataMappingReport(ktToKrk, krkToKt);
 
@@ -51,12 +57,34 @@ public class SummationsController {
             return new ResponseEntity<>(finish, HttpStatus.OK);
     }
 
-    private static class SummationsModel{
+    @GetMapping("/freely/{fromDate}/{toDate}")
+    public ResponseEntity freelyDates(@PathVariable String fromDate, @PathVariable String toDate) {
+        List<Report> ktToKrk = reportManager.findAll().stream()
+                .filter(k -> k.getCourses().getDate().isAfter(LocalDate.parse(fromDate)))
+                .filter(k -> k.getCourses().getDate().isBefore(LocalDate.parse(toDate)))
+                .filter(k -> k.getCourses().getRoute().equals(Route.KatowiceToKrakow))
+                .collect(Collectors.toList());
+
+        List<Report> krkToKt = reportManager.findAll().stream()
+                .filter(k -> k.getCourses().getDate().isAfter(LocalDate.parse(fromDate).minusDays(1)))
+                .filter(k -> k.getCourses().getDate().isBefore(LocalDate.parse(toDate).plusDays(1)))
+                .filter(k -> k.getCourses().getRoute().equals(Route.KrakowToKatowice))
+                .collect(Collectors.toList());
+
+        List<SummationsModel> finish = dataMappingReport(ktToKrk, krkToKt);
+
+        if(ktToKrk.isEmpty() && krkToKt.isEmpty()){
+            return new ResponseEntity<>("Repository is empty!", HttpStatus.NOT_FOUND);
+        } else
+            return new ResponseEntity<>(finish, HttpStatus.OK);
+    }
+
+    protected static class SummationsModel{
         private String firstName;
         private String lastName;
         private long income;
         private long refuelingCost;
-        private long balance;
+        private long distance;
         private Set<StopPassengersPairSetModel> stopPassengersPairSetModels;
 
         private static class StopPassengersPairSetModel{
@@ -90,12 +118,12 @@ public class SummationsController {
             }
         }
 
-        public SummationsModel(String firstName, String lastName, long income, long refuelingCost, long balance, Set<StopPassengersPairSetModel> stopPassengersPairSetModels) {
+        public SummationsModel(String firstName, String lastName, long income, long refuelingCost, long distance, Set<StopPassengersPairSetModel> stopPassengersPairSetModels) {
             this.firstName = firstName;
             this.lastName = lastName;
             this.income = income;
             this.refuelingCost = refuelingCost;
-            this.balance = balance;
+            this.distance = distance;
             this.stopPassengersPairSetModels = stopPassengersPairSetModels;
         }
 
@@ -131,12 +159,12 @@ public class SummationsController {
             this.refuelingCost += refuelingCost;
         }
 
-        public long getBalance() {
-            return balance;
+        public long getDistance() {
+            return distance;
         }
 
-        public void setBalance(long income, long refuelingCost) {
-            this.balance = income - refuelingCost;
+        public void setDistance(long distance) {
+            this.distance += distance;
         }
 
         public Set<StopPassengersPairSetModel> getStopPassengersPairSetModels() {
@@ -150,139 +178,85 @@ public class SummationsController {
 
     public void fillWithDriverAndCar(List<SummationsModel> models){
         List<Employees> employees = employeesManager.findByRole(Role.Driver);
-        employees.stream().map(temp ->{
-            models.add(new SummationsModel(temp.getFirstName(), temp.getLastName(), 0, 0, 0, null));
-            return models;
-        });
+        List<SummationsModel> employeesStream = employees.stream().map(temp ->
+                new SummationsModel(temp.getFirstName(), temp.getLastName(), 0, 0, 0,
+                        new HashSet<>()))
+                .collect(Collectors.toList());
 
         List<Car> cars = carManager.findAll();
-        cars.stream().map(temp ->{
-            models.add(new SummationsModel(temp.getModel(), temp.getBrand(), 0, 0, 0, null));
-            return models;
-        });
+        List<SummationsModel> carsStream = cars.stream().map(temp ->
+            new SummationsModel(temp.getBrand(), temp.getModel(), 0, 0, 0,
+                    new HashSet<>())
+        ).collect(Collectors.toList());
+
+        models.addAll(employeesStream);
+        models.addAll(carsStream);
     }
 
     public List<SummationsModel> dataMappingReport(List<Report> ktToKrk, List<Report> krkToKt){
         List<SummationsModel> summationsModels = new ArrayList<>();
         fillWithDriverAndCar(summationsModels);
-        List<SummationsModel> summationsModelsKrkToKt = new ArrayList<>();
-        fillWithDriverAndCar(summationsModelsKrkToKt);
+        AtomicInteger counter = new AtomicInteger();
 
-        ktToKrk.stream().map(temp -> {
-            for (SummationsModel s : summationsModels){
-                if (s.getFirstName().equals(temp.getCourses().getDriver().getFirstName()) &&
-                        s.getLastName().equals(temp.getCourses().getDriver().getLastName())){
-                    s.setIncome(temp.getIncome());
-                    s.setRefuelingCost(temp.getRefuelingCost());
+        for (SummationsModel s : summationsModels){
+            ktToKrk.stream()
+                    .filter(k -> (s.getFirstName().equals(k.getCourses().getDriver().getFirstName()) &&
+                            s.getLastName().equals(k.getCourses().getDriver().getLastName()) ||
+                            (s.getFirstName().equals(k.getCourses().getCar().getBrand()) &&
+                                    s.getLastName().equals(k.getCourses().getCar().getModel()))))
+                    .forEach(k -> {
+                        s.setIncome(k.getIncome());
+                        s.setRefuelingCost(k.getRefuelingCost());
+                        s.setDistance(k.getDistance());
 
-                    temp.getAmountOfPassengers().stream().map(t -> {
-                        AtomicInteger counter = new AtomicInteger();
-                        counter.set(0);
-                        s.getStopPassengersPairSetModels().stream().map(st -> {
-                            if (st.getStop().equals(t.getStop()) && st.getRoute().equals(Route.KatowiceToKrakow)){
-                                st.setPassengers(st.getPassengers() + t.getPassengers());
-                                return st;
-                            } else {
-                                return counter.getAndIncrement();
+                        for (StopPassengersPair ka : k.getAmountOfPassengers()){
+                            counter.set(0);
+                            for (SummationsModel.StopPassengersPairSetModel sa : s.getStopPassengersPairSetModels()) {
+                                if (ka.getStop().equals(sa.getStop()) && ka.getReport().getCourses()
+                                        .getRoute().equals(Route.KatowiceToKrakow)) {
+                                    sa.setPassengers(ka.getPassengers());
+                                    counter.getAndIncrement();
+                                }
                             }
-                        });
-                        if (counter.get() == s.getStopPassengersPairSetModels().size()){
-                            SummationsModel.StopPassengersPairSetModel stopPassengersPairSetModel = null;
-                            stopPassengersPairSetModel.setRoute(Route.KatowiceToKrakow);
-                            stopPassengersPairSetModel.setStop(t.getStop());
-                            stopPassengersPairSetModel.setPassengers(t.getPassengers());
-                            s.getStopPassengersPairSetModels().add(stopPassengersPairSetModel);
-                        }
-                        return s;
-                    });
-                } else if (s.getFirstName().equals(temp.getCourses().getCar().getModel()) &&
-                        s.getLastName().equals(temp.getCourses().getCar().getBrand())){
-                    s.setIncome(temp.getIncome());
-                    s.setRefuelingCost(temp.getRefuelingCost());
-
-                    temp.getAmountOfPassengers().stream().map(t -> {
-                        AtomicInteger counter = new AtomicInteger();
-                        counter.set(0);
-                        s.getStopPassengersPairSetModels().stream().map(st -> {
-                            if (st.getStop().equals(t.getStop()) && st.getRoute().equals(Route.KrakowToKatowice)){
-                                st.setPassengers(st.getPassengers() + t.getPassengers());
-                                return st;
-                            } else {
-                                return counter.getAndIncrement();
+                            if (counter.get() == 0){
+                                SummationsModel.StopPassengersPairSetModel stopPassengersPairSetModel = new SummationsModel.StopPassengersPairSetModel();
+                                stopPassengersPairSetModel.setRoute(Route.KatowiceToKrakow);
+                                stopPassengersPairSetModel.setStop(ka.getStop());
+                                stopPassengersPairSetModel.setPassengers(ka.getPassengers());
+                                s.getStopPassengersPairSetModels().add(stopPassengersPairSetModel);
                             }
-                        });
-                        if (counter.get() == s.getStopPassengersPairSetModels().size()){
-                            SummationsModel.StopPassengersPairSetModel stopPassengersPairSetModel = null;
-                            stopPassengersPairSetModel.setRoute(Route.KrakowToKatowice);
-                            stopPassengersPairSetModel.setStop(t.getStop());
-                            stopPassengersPairSetModel.setPassengers(t.getPassengers());
-                            s.getStopPassengersPairSetModels().add(stopPassengersPairSetModel);
                         }
-                        return s;
                     });
-                }
-            }
 
-            return summationsModels;
-        });
-
-        krkToKt.stream().map(temp -> {
-            for (SummationsModel s : summationsModelsKrkToKt){
-                if (s.getFirstName().equals(temp.getCourses().getDriver().getFirstName()) &&
-                        s.getLastName().equals(temp.getCourses().getDriver().getLastName())){
-                    s.setIncome(temp.getIncome());
-                    s.setRefuelingCost(temp.getRefuelingCost());
-
-                    temp.getAmountOfPassengers().stream().map(t -> {
-                        AtomicInteger counter = new AtomicInteger();
-                        counter.set(0);
-                        s.getStopPassengersPairSetModels().stream().map(st -> {
-                            if (st.getStop().equals(t.getStop()) && st.getRoute().equals(Route.KatowiceToKrakow)){
-                                st.setPassengers(st.getPassengers() + t.getPassengers());
-                                return st;
-                            } else {
-                                return counter.getAndIncrement();
+            krkToKt.stream()
+                    .filter(k -> (s.getFirstName().equals(k.getCourses().getDriver().getFirstName()) &&
+                            s.getLastName().equals(k.getCourses().getDriver().getLastName()) ||
+                            (s.getFirstName().equals(k.getCourses().getCar().getBrand()) &&
+                                    s.getLastName().equals(k.getCourses().getCar().getModel()))))
+                    .forEach(k -> {
+                        s.setIncome(k.getIncome());
+                        s.setRefuelingCost(k.getRefuelingCost());
+                        s.setDistance(k.getDistance());
+                        
+                        for (StopPassengersPair ka : k.getAmountOfPassengers()){
+                            counter.set(0);
+                            for (SummationsModel.StopPassengersPairSetModel sa : s.getStopPassengersPairSetModels()) {
+                                if (ka.getStop().equals(sa.getStop()) && ka.getReport().getCourses()
+                                        .getRoute().equals(Route.KrakowToKatowice)) {
+                                    sa.setPassengers(ka.getPassengers());
+                                    counter.getAndIncrement();
+                                }
                             }
-                        });
-                        if (counter.get() == s.getStopPassengersPairSetModels().size()){
-                            SummationsModel.StopPassengersPairSetModel stopPassengersPairSetModel = null;
-                            stopPassengersPairSetModel.setRoute(Route.KatowiceToKrakow);
-                            stopPassengersPairSetModel.setStop(t.getStop());
-                            stopPassengersPairSetModel.setPassengers(t.getPassengers());
-                            s.getStopPassengersPairSetModels().add(stopPassengersPairSetModel);
-                        }
-                        return s;
-                    });
-                } else if (s.getFirstName().equals(temp.getCourses().getCar().getModel()) &&
-                        s.getLastName().equals(temp.getCourses().getCar().getBrand())){
-                    s.setIncome(temp.getIncome());
-                    s.setRefuelingCost(temp.getRefuelingCost());
-
-                    temp.getAmountOfPassengers().stream().map(t -> {
-                        AtomicInteger counter = new AtomicInteger();
-                        counter.set(0);
-                        s.getStopPassengersPairSetModels().stream().map(st -> {
-                            if (st.getStop().equals(t.getStop()) && st.getRoute().equals(Route.KrakowToKatowice)){
-                                st.setPassengers(st.getPassengers() + t.getPassengers());
-                                return st;
-                            } else {
-                                return counter.getAndIncrement();
+                            if (counter.get() == 0){
+                                SummationsModel.StopPassengersPairSetModel stopPassengersPairSetModel = new SummationsModel.StopPassengersPairSetModel();
+                                stopPassengersPairSetModel.setRoute(Route.KrakowToKatowice);
+                                stopPassengersPairSetModel.setStop(ka.getStop());
+                                stopPassengersPairSetModel.setPassengers(ka.getPassengers());
+                                s.getStopPassengersPairSetModels().add(stopPassengersPairSetModel);
                             }
-                        });
-                        if (counter.get() == s.getStopPassengersPairSetModels().size()){
-                            SummationsModel.StopPassengersPairSetModel stopPassengersPairSetModel = null;
-                            stopPassengersPairSetModel.setRoute(Route.KrakowToKatowice);
-                            stopPassengersPairSetModel.setStop(t.getStop());
-                            stopPassengersPairSetModel.setPassengers(t.getPassengers());
-                            s.getStopPassengersPairSetModels().add(stopPassengersPairSetModel);
                         }
-                        return s;
                     });
-                }
-            }
-            return summationsModelsKrkToKt;
-        });
-        summationsModels.addAll(summationsModelsKrkToKt);
+        }
         return summationsModels;
     }
 }

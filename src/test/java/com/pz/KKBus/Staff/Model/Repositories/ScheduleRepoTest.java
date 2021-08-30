@@ -51,7 +51,7 @@ class ScheduleRepoTest {
                 "Markowski", LocalDate.parse("1997-05-20"), Role.Driver, 3000));
         return employees;
     }
-/*
+
     @BeforeEach
     void setUp() {
         employeesRepo.saveAll(employeesList());
@@ -117,5 +117,5 @@ class ScheduleRepoTest {
                 LocalDate.parse("2021-11-12"), LocalDate.parse("2021-11-23"));
 
         assertTrue(schedules.isEmpty());
-    }*/
+    }
 }

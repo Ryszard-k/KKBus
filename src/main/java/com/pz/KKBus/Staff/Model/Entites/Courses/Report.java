@@ -1,10 +1,5 @@
 package com.pz.KKBus.Staff.Model.Entites.Courses;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
@@ -16,7 +11,6 @@ public class Report {
     @Id
     private Long id;
 
-    @Column(name = "amountOfPassengers")
     @OneToMany(mappedBy = "report", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StopPassengersPair> amountOfPassengers;
@@ -27,13 +21,12 @@ public class Report {
 
     private int income;
 
-    @OneToOne(fetch = FetchType.EAGER, optional = false)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Course_id", nullable = false)
     private Courses courses;
 
-    public Report(Long id, Set<StopPassengersPair> amountOfPassengers, int refuelingCost, int distance, int income, Courses courses) {
+    public Report(Long id, int refuelingCost, int distance, int income, Courses courses) {
         this.id = id;
-        this.amountOfPassengers = amountOfPassengers;
         this.refuelingCost = refuelingCost;
         this.distance = distance;
         this.income = income;

@@ -1,8 +1,6 @@
 package com.pz.KKBus.Staff.Model.Entites.Courses;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.pz.KKBus.Customer.Model.Entites.Schedules.KatowiceToKrakowDeparture;
-import com.pz.KKBus.Customer.Model.Entites.Schedules.KrakowToKatowiceDeparture;
 import com.pz.KKBus.Customer.Model.Enums.Route;
 import com.pz.KKBus.Staff.Model.Entites.Car;
 import com.pz.KKBus.Staff.Model.Entites.Employees;
@@ -20,6 +18,7 @@ public class Courses {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id_course")
     private Long id;
 
     @NotNull
@@ -33,16 +32,16 @@ public class Courses {
     @DateTimeFormat(pattern = "hh:mm")
     private LocalTime departureTime;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "car_id", nullable = false)
     private Car car;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employees driver;
 
     @OneToOne(mappedBy = "courses", cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
+            fetch = FetchType.LAZY)
     private Report report;
 
     public Courses(Long id, @NotNull LocalDate date, @NotNull Route route, @NotNull LocalTime departureTime, Car car, Employees driver) {

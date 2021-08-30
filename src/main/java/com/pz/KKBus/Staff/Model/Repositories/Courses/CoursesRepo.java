@@ -19,7 +19,5 @@ public interface CoursesRepo extends JpaRepository<Courses, Long> {
     List<Courses> findByDriver(Employees employees);
     List<Courses> findByCar(Car car);
 
-    @Query(value = "SELECT report FROM Courses c WHERE c.date = :date AND c.route = :route",
-            nativeQuery = true)
-    List<Report> findByDate(@Param(value = "date") LocalDate date, @Param(value = "route") Route route);
+    List<Courses> findByDateAndRoute(@Param(value = "date") LocalDate date, @Param(value = "route") Route route);
 }

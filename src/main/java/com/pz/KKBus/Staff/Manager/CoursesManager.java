@@ -1,30 +1,17 @@
 package com.pz.KKBus.Staff.Manager;
 
-import com.pz.KKBus.Customer.Model.Entites.Schedules.KrakowToKatowice;
-import com.pz.KKBus.Customer.Model.Entites.Schedules.KrakowToKatowiceDeparture;
 import com.pz.KKBus.Customer.Model.Enums.Route;
 import com.pz.KKBus.Staff.Model.Entites.Car;
-import com.pz.KKBus.Staff.Model.Entites.CarProperties;
 import com.pz.KKBus.Staff.Model.Entites.Courses.Courses;
 import com.pz.KKBus.Staff.Model.Entites.Courses.Report;
 import com.pz.KKBus.Staff.Model.Entites.Employees;
-import com.pz.KKBus.Staff.Model.Enums.Role;
-import com.pz.KKBus.Staff.Model.Enums.State;
-import com.pz.KKBus.Staff.Model.Repositories.CarPropertiesRepo;
-import com.pz.KKBus.Staff.Model.Repositories.CarRepo;
 import com.pz.KKBus.Staff.Model.Repositories.Courses.CoursesRepo;
-import com.pz.KKBus.Staff.Model.Repositories.EmployeesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class CoursesManager {
@@ -51,16 +38,24 @@ public class CoursesManager {
         return coursesRepo.findByCar(car);
     }
 
-    public List<Report> findByDate(LocalDate date, Route route){
-        List<Report> reports = coursesRepo.findByDate(date, route);
-        if (!reports.isEmpty()){
-            return reports;
+    public List<Courses> findByDate(LocalDate date, Route route){
+        List<Courses> courses = coursesRepo.findByDateAndRoute(date, route);
+        if (!courses.isEmpty()){
+            return courses;
         } else
             return List.of();
     }
 
     public Courses save(Courses course) {
        return coursesRepo.save(course);
+    }
+
+    public void update(Long id, Report report){
+        Optional<Courses> courses = coursesRepo.findById(id);
+        if (courses.isPresent()){
+            courses.get().setReport(report);
+            coursesRepo.save(courses.get());
+        }
     }
 
     public Optional<Courses> deleteById(Long id){

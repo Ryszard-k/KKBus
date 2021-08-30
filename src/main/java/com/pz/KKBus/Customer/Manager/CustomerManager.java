@@ -117,7 +117,7 @@ public class CustomerManager {
         token.setValue(tokenValue);
         token.setCustomer(customer);
         tokenRepo.save(token);
-        String url = "http://localhost:8080/token?value=" + tokenValue;
+        String url = "https://kkbusy.herokuapp.com/token?value=" + tokenValue;
         try {
             mailManager.sendMail(customer.getEmail(), "Confirm your account", url + "\n" + "Username: " +
                             customer.getUsername(), false);

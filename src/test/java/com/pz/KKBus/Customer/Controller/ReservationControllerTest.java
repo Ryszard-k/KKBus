@@ -51,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
-/*
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -98,7 +98,7 @@ class ReservationControllerTest {
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek3", customerList().get(0), Status.Created));
         return reservations;
     }
-/*
+
 
     @Test
     void getReservation() throws Exception {
@@ -747,5 +747,5 @@ class ReservationControllerTest {
         verify(reservationManager, times(1)).findById(anyLong());
         verify(reservationManager, times(0)).deleteById(anyLong());
         verify(mailManager, times(0)).sendMail(anyString(), anyString(), anyString(), eq(false));
-    }*/
+    }
 }

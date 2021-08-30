@@ -4,10 +4,9 @@ import com.pz.KKBus.Customer.Manager.ReservationManager;
 import com.pz.KKBus.Customer.Model.ReportWithReservationsIds;
 import com.pz.KKBus.Customer.Model.Entites.Reservation;
 import com.pz.KKBus.Customer.Model.Enums.Status;
+import com.pz.KKBus.Staff.Manager.CoursesManager;
 import com.pz.KKBus.Staff.Manager.ReportManager;
-import com.pz.KKBus.Staff.Manager.StopPassengersPairManager;
 import com.pz.KKBus.Staff.Model.Entites.Courses.Report;
-import com.pz.KKBus.Staff.Model.Entites.Courses.StopPassengersPair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/report")
@@ -24,11 +22,13 @@ public class ReportController implements CrudControllerMethods<ReportWithReserva
 
     private final ReportManager reportManager;
     private final ReservationManager reservationManager;
+    private final CoursesManager coursesManager;
 
     @Autowired
-    public ReportController(ReportManager reportManager, ReservationManager reservationManager) {
+    public ReportController(ReportManager reportManager, ReservationManager reservationManager, CoursesManager coursesManager) {
         this.reportManager = reportManager;
         this.reservationManager = reservationManager;
+        this.coursesManager = coursesManager;
     }
 
     @Override
@@ -70,22 +70,21 @@ public class ReportController implements CrudControllerMethods<ReportWithReserva
     public ResponseEntity<Object> add(@RequestBody ReportWithReservationsIds object) {
         List<Reservation> reservationList = reservationManager.findByDate(object.getReport().getCourses().getDate());
         for (Reservation r : reservationList){
-            object.getIds().stream().map(temp ->{
+            object.getIds().stream().forEach(temp ->{
                 if (temp.equals(r.getId())){
                     r.setStatus(Status.Realized);
-                    return reservationManager.cleanSave(r);
-                } else return null;
+                    reservationManager.cleanSave(r);
+                }
             });
         }
         if (object == null) {
             return new ResponseEntity<>("Empty input data", HttpStatus.BAD_REQUEST);
-        } else
-        object.getReport().getAmountOfPassengers().stream().map(temp -> {
-            temp.setReport(object.getReport());
-            return temp;
-        }).collect(Collectors.toSet());
-        reportManager.save(object.getReport());
-        return new ResponseEntity<>(object, HttpStatus.CREATED);
+        } else {
+            Report reports1 = (Report) object.getReport().getAmountOfPassengers().stream()
+                    .peek(temp -> temp.setReport(object.getReport()));
+            reportManager.save(reports1);
+            return new ResponseEntity<>(object, HttpStatus.CREATED);
+        }
     }
 
     @Override
