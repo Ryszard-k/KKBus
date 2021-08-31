@@ -64,7 +64,7 @@ public class Customer implements UserDetails {
     private Set<Reward> rewards;
 
     public Customer(Long id, String firstName, String lastName, LocalDate birthDate, @Email String email,
-                    Integer phoneNumber, String username, String password, Role role, boolean isEnabled) {
+                    Integer phoneNumber, String username, String password, Role role, boolean discount, boolean isEnabled) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -74,6 +74,7 @@ public class Customer implements UserDetails {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.discount = discount;
         this.isEnabled = isEnabled;
     }
 

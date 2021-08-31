@@ -39,7 +39,7 @@ public class CustomerManager {
         this.reservationRepo = reservationRepo;
     }
 
-    public Iterable<Customer> findAll(){
+    public List<Customer> findAll(){
         return customerRepo.findAll();
     }
 
@@ -55,6 +55,7 @@ public class CustomerManager {
         customer.setUsername(usernameGenerator(customer));
         customer.setPassword(passwordEncoder.encode(passwordGenerator()));
         customer.setRole(Role.CustomerDisabled);
+        customer.setDiscount(false);
         sendToken(customer);
 
         return customerRepo.save(customer);
@@ -131,7 +132,7 @@ public class CustomerManager {
     public void fillCustomer(){
         customerRepo.save(new Customer((long) 1, "Marek", "Kowalski", LocalDate.parse("1983-02-23"), "piotr.wojcik543@gmail.com",
                 123456789, "kowalski", passwordEncoder.encode("kowalski123"),
-                Role.CustomerEnabled, true));
+                Role.CustomerEnabled, false,  true));
 
         reservationRepo.save(new Reservation((long) 1, LocalDate.parse("2021-06-28"), LocalTime.parse("08:30"), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek3", findByUsername("kowalski").get(), Status.Unrealized));

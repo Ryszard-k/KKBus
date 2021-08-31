@@ -106,9 +106,9 @@ class SummationsControllerTest {
         List<Courses> courses = new ArrayList<>();
         courses.add(new Courses((long) 1, LocalDate.now(), Route.KatowiceToKrakow, LocalTime.parse("08:11"),
                 carList().get(0), employeesList().get(1)));
-        courses.add(new Courses((long) 2, LocalDate.now().minusDays(30), Route.KatowiceToKrakow, LocalTime.parse("11:11"),
+        courses.add(new Courses((long) 2, LocalDate.now().minusDays(3), Route.KatowiceToKrakow, LocalTime.parse("11:11"),
                 carList().get(1), employeesList().get(1)));
-        courses.add(new Courses((long) 3, LocalDate.now(), Route.KrakowToKatowice, LocalTime.parse("18:51"),
+        courses.add(new Courses((long) 3, LocalDate.now().plusDays(3), Route.KrakowToKatowice, LocalTime.parse("18:51"),
                 carList().get(2), employeesList().get(2)));
         return courses;
     }

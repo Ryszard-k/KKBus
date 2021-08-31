@@ -60,8 +60,8 @@ public class SummationsController {
     @GetMapping("/freely/{fromDate}/{toDate}")
     public ResponseEntity freelyDates(@PathVariable String fromDate, @PathVariable String toDate) {
         List<Report> ktToKrk = reportManager.findAll().stream()
-                .filter(k -> k.getCourses().getDate().isAfter(LocalDate.parse(fromDate)))
-                .filter(k -> k.getCourses().getDate().isBefore(LocalDate.parse(toDate)))
+                .filter(k -> k.getCourses().getDate().isAfter(LocalDate.parse(fromDate).minusDays(1)))
+                .filter(k -> k.getCourses().getDate().isBefore(LocalDate.parse(toDate).plusDays(1)))
                 .filter(k -> k.getCourses().getRoute().equals(Route.KatowiceToKrakow))
                 .collect(Collectors.toList());
 
