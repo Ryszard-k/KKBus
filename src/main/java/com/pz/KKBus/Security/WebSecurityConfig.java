@@ -69,6 +69,7 @@ public class WebSecurityConfig {
             http.headers().disable();
             http
                     .authorizeRequests()
+                    .antMatchers("/sign-up").permitAll()
                     .antMatchers("/katowiceToKrakow").hasAnyAuthority(Role.Admin.name(),
                         Role.OfficeWorker.name())
                     .antMatchers("/katowiceToKrakow/*").hasAnyAuthority(Role.Admin.name(),
