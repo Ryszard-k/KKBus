@@ -84,7 +84,7 @@ public class ScheduleController {
             }
         }
 
-    @PostMapping(path = "/{id}",
+    @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )

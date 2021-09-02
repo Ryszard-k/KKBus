@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -32,6 +33,9 @@ class CoursesManagerTest {
 
     @Mock
     private CoursesRepo coursesRepo;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private CoursesManager coursesManager;
@@ -63,7 +67,8 @@ class CoursesManagerTest {
         courses.add(new Courses((long) 2, LocalDate.parse("2021-04-23"),Route.KatowiceToKrakow,
                 LocalTime.parse("11:47") , carList().get(1), employeesList().get(0)));
         courses.add(new Courses((long) 3, LocalDate.parse("2021-04-23"),Route.KrakowToKatowice ,
-                LocalTime.parse("16:47"), carList().get(1), employeesList().get(0)));        return courses;
+                LocalTime.parse("16:47"), carList().get(1), employeesList().get(0)));
+        return courses;
     }
 
     private List<Car> carList() {
@@ -77,11 +82,14 @@ class CoursesManagerTest {
     private List<Employees> employeesList() {
         List<Employees> employees = new ArrayList<>();
         employees.add(new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, 5000));
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, "KowalskiJan",
+                passwordEncoder.encode("KowalskiJan"), 5000));
         employees.add(new Employees((long) 2,"Anna",
-                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, 3000));
+                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, "NowakAnna",
+                passwordEncoder.encode("NowakAnna"), 3000));
         employees.add(new Employees((long) 3,"Andrzej",
-                "Konrad", LocalDate.parse("1988-05-20"), Role.Driver, 4000));
+                "Konrad", LocalDate.parse("1988-05-20"), Role.Driver, "KonradAndrzej",
+                passwordEncoder.encode("KonradAndrzej"), 4000));
         return employees;
     }
 

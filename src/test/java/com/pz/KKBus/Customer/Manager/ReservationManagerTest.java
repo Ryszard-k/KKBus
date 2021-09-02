@@ -61,7 +61,7 @@ class ReservationManagerTest {
         List<Customer> customers = new ArrayList<>();
 
     customers.add(new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-            123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true));
+            123456789,"kowalski", "kowalski123", Role.CustomerEnabled,false, true));
         return customers;
     }
 
@@ -283,7 +283,7 @@ class ReservationManagerTest {
     @Test
     void enableReservation_shouldReturnTrue_saveToDB() {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         List<Reservation> reservations = new ArrayList<>();
         reservations.add(new Reservation((long) 1, LocalDate.parse("2020-06-26"), LocalTime.parse("08:30"), 2,
@@ -310,7 +310,7 @@ class ReservationManagerTest {
     @Test
     void enableReservation_shouldReturnFalse_sendEmail() throws MessagingException {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,false, true);
 
         List<Reservation> reservations = new ArrayList<>();
         reservations.add(new Reservation((long) 1, LocalDate.parse("2020-06-26"), LocalTime.parse("08:30"), 2,

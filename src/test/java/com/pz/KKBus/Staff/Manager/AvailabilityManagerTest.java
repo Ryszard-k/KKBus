@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,6 +28,9 @@ class AvailabilityManagerTest {
 
     @Mock
     private AvailabilityRepo availabilityRepo;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private AvailabilityManager availabilityManager;
@@ -47,9 +52,11 @@ class AvailabilityManagerTest {
         List<Employees> employees = new ArrayList<>();
 
         employees.add(new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, 5000));
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, "KowalskiJan",
+                passwordEncoder.encode("KowalskiJan"), 5000));
         employees.add(new Employees((long) 2,"Anna",
-                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, 3000));
+                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, "NowakAnna",
+                passwordEncoder.encode("NowakAnna"), 3000));
         return employees;
     }
 

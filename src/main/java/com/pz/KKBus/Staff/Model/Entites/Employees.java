@@ -6,15 +6,20 @@ import com.pz.KKBus.Staff.Model.Entites.Schedule.Availability;
 import com.pz.KKBus.Staff.Model.Entites.Schedule.Schedule;
 import com.pz.KKBus.Staff.Model.Entites.Schedule.Unavailability;
 import com.pz.KKBus.Staff.Model.Enums.Role;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @JsonIgnoreProperties({"availabilities", "unavailabilities", "schedules", "courses"})
-public class Employees {
+public class Employees implements UserDetails {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
@@ -26,6 +31,8 @@ public class Employees {
     @Enumerated(EnumType.STRING)
     private Role role;
     private int salary;
+    private String username;
+    private String password;
 
     @OneToMany(mappedBy = "employees", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
@@ -45,12 +52,14 @@ public class Employees {
 
     public Employees(){}
 
-    public Employees(Long id, String firstName, String lastName, LocalDate birthDate, Role role, int salary) {
+    public Employees(Long id, String firstName, String lastName, LocalDate birthDate, Role role, String username, String password, int salary) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.role = role;
+        this.username = username;
+        this.password = password;
         this.salary = salary;
     }
 
@@ -132,6 +141,47 @@ public class Employees {
 
     public void setCourses(Set<Courses> courses) {
         this.courses = courses;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singleton(new SimpleGrantedAuthority(role.name()));
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override

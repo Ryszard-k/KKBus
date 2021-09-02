@@ -6,6 +6,7 @@ import com.pz.KKBus.Staff.Model.Enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,10 +17,12 @@ import java.util.Optional;
 public class EmployeesManager {
 
     private final EmployeesRepo employeesRepo;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public EmployeesManager(EmployeesRepo employeesRepo) {
+    public EmployeesManager(EmployeesRepo employeesRepo, PasswordEncoder passwordEncoder) {
         this.employeesRepo = employeesRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Iterable<Employees> findAll(){
@@ -39,6 +42,7 @@ public class EmployeesManager {
     }
 
     public Employees save(Employees employees){
+        employees.setPassword(passwordEncoder.encode(employees.getPassword()));
         return employeesRepo.save(employees);
     }
 
@@ -52,10 +56,13 @@ public class EmployeesManager {
     @EventListener(ApplicationReadyEvent.class)
     public void fillEmployees(){
         employeesRepo.save(new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Driver, 5000));
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Driver, "KowalskiJan",
+                passwordEncoder.encode("KowalskiJan"), 5000));
         employeesRepo.save(new Employees((long) 2,"Anna",
-                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, 3000));
+                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, "NowakAnna",
+                passwordEncoder.encode("NowakAnna"),3000));
         employeesRepo.save(new Employees((long) 3,"Andrzej",
-                "Konrad", LocalDate.parse("1988-05-20"), Role.Admin, 4000));
+                "Konrad", LocalDate.parse("1988-05-20"), Role.Admin, "KonradAndrzej",
+                passwordEncoder.encode("KonradAndrzej"),4000));
     }
 }

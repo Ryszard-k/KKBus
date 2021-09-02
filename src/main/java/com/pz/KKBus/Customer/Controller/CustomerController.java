@@ -30,11 +30,6 @@ public class CustomerController {
         this.customerRepo = customerRepo;
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "hello";
-    }
-
     @GetMapping("/sign-up")
     public String signup(Model model) {
         model.addAttribute("customer", new Customer());
@@ -51,7 +46,6 @@ public class CustomerController {
     public String token(@RequestParam String value) throws MismatchedTokenException {
         Optional<Token> byValue = Optional.ofNullable(tokenRepo.findByValue(value).orElseThrow(() ->
                 new MismatchedTokenException()));
-
         Customer customer = byValue.get().getCustomer();
         customer.setEnabled(true);
         customer.setRole(Role.CustomerEnabled);
@@ -68,6 +62,6 @@ public class CustomerController {
     @PostMapping("/chpassword")
     public String chpassword(String password, String username) {
         customerManager.passwordUpdate(username, password);
-        return "hello";
+        return "chpassword";
     }
 }

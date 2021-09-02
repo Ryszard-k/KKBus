@@ -27,6 +27,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -77,6 +78,9 @@ class SummationsControllerTest {
     @MockBean
     private UserDetailServiceImpl userDetailService;
 
+    @MockBean
+    private PasswordEncoder passwordEncoder;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -86,11 +90,14 @@ class SummationsControllerTest {
         List<Employees> employees = new ArrayList<>();
 
         employees.add(new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.OfficeWorker, 5000));
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.OfficeWorker, "KowalskiJan",
+                passwordEncoder.encode("KowalskiJan"), 5000));
         employees.add(new Employees((long) 2,"Anna",
-                "Nowak", LocalDate.parse("1997-05-20"), Role.Driver, 3000));
+                "Nowak", LocalDate.parse("1997-05-20"), Role.Driver, "NowakAnna",
+                passwordEncoder.encode("NowakAnna"), 3000));
         employees.add(new Employees((long) 3,"Marek",
-                "Markowski", LocalDate.parse("1997-05-20"), Role.Driver, 3000));
+                "Markowski", LocalDate.parse("1997-05-20"), Role.Driver, "MarkowskiMarek",
+                passwordEncoder.encode("MarkowskiMarek"),3000));
         return employees;
     }
 

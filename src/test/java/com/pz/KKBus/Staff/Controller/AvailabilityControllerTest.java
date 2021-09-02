@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -55,6 +56,9 @@ class AvailabilityControllerTest {
     @MockBean
     private UserDetailServiceImpl userDetailService;
 
+    @MockBean
+    private PasswordEncoder passwordEncoder;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -72,9 +76,11 @@ class AvailabilityControllerTest {
         List<Employees> employees = new ArrayList<>();
 
         employees.add(new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, 5000));
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, "KowalskiJan",
+                passwordEncoder.encode("KowalskiJan"), 5000));
         employees.add(new Employees((long) 2,"Anna",
-                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, 3000));
+                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, "NowakAnna",
+                passwordEncoder.encode("NowakAnna"), 3000));
         return employees;
     }
 
@@ -158,7 +164,8 @@ class AvailabilityControllerTest {
     @Test
     void addAvailabilities() throws Exception {
         Employees employees = new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, 5000);
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin,"KowalskiJan",
+                passwordEncoder.encode("KowalskiJan"), 5000);
 
         List<Availability> availabilities = new ArrayList<>();
         availabilities.add(new Availability((long) 4, LocalDate.parse("2021-11-24"), employees));
@@ -188,7 +195,8 @@ class AvailabilityControllerTest {
     @Test
     void addAvailabilities_nullEmployee_returnFalse() throws Exception {
         Employees employees = new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, 5000);
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, "KowalskiJan",
+                passwordEncoder.encode("KowalskiJan"),5000);
 
         List<Availability> availabilities = new ArrayList<>();
         availabilities.add(new Availability((long) 4, LocalDate.parse("2021-11-24"), employees));
@@ -218,7 +226,8 @@ class AvailabilityControllerTest {
     @Test
     void addAvailabilities_nullAvailabilities_returnFalse() throws Exception {
         Employees employees = new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, 5000);
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, "KowalskiJan",
+                passwordEncoder.encode("KowalskiJan"),5000);
 
         List<Availability> availabilities = new ArrayList<>();
         availabilities.add(new Availability((long) 4, LocalDate.parse("2021-11-24"), employees));
@@ -248,7 +257,8 @@ class AvailabilityControllerTest {
     @Test
     void deleteAvailabilities() throws Exception {
         Employees employees = new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, 5000);
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, "KowalskiJan",
+                passwordEncoder.encode("KowalskiJan"),5000);
 
         List<Availability> availabilities = new ArrayList<>();
         availabilities.add(new Availability((long) 4, LocalDate.parse("2021-11-24"), employees));
@@ -276,7 +286,8 @@ class AvailabilityControllerTest {
     @Test
     void deleteAvailabilities_emptyList() throws Exception {
         Employees employees = new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, 5000);
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, "KowalskiJan",
+                passwordEncoder.encode("KowalskiJan"),5000);
 
         List<Availability> availabilities = new ArrayList<>();
         availabilities.add(new Availability((long) 4, LocalDate.parse("2021-11-24"), employees));

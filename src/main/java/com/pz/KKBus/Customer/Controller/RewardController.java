@@ -51,8 +51,11 @@ public class RewardController {
     )
     public ResponseEntity<Object> addReward(@RequestBody Reward reward, @PathVariable String username){
         Optional<Customer> customer = customerManager.findByUsername(username);
-        if (reward != null && customer.isPresent()) {
+        if (reward != null && customer.isPresent() && reward.getPoints() < customer.get().getPoints()) {
+            reward.setRewardStatus(RewardStatus.Realized);
             rewardManager.save(reward, customer);
+            customer.get().setPoints(customer.get().getPoints() - reward.getPoints());
+            customerManager.update(customer.get());
             return new ResponseEntity<>(reward, HttpStatus.CREATED);
         } else
             return new ResponseEntity<>("Empty input data", HttpStatus.BAD_REQUEST);

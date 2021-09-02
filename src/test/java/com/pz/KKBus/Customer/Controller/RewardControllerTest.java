@@ -94,7 +94,7 @@ class RewardControllerTest {
         List<Customer> customers = new ArrayList<>();
 
         customers.add(new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true));
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,false, true));
         return customers;
     }
 
@@ -236,7 +236,7 @@ class RewardControllerTest {
     @Test
     void addReward_nullReward_returnFalse() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,false, true);
 
         Reward reward = new Reward((long) 3, "Discount -45%", 50, LocalDate.parse("2021-06-30"), customerList().get(0),
                 RewardStatus.Unrealized);
@@ -265,7 +265,7 @@ class RewardControllerTest {
     @Test
     void deleteReward() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,false, true);
 
         Reward reward = new Reward((long) 3, "Discount -45%", 50, LocalDate.parse("2021-06-30"), customerList().get(0),
                 RewardStatus.Unrealized);
@@ -294,7 +294,7 @@ class RewardControllerTest {
     @Test
     void deleteReward_NullReward_returnFalse() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,false, true);
 
         Reward reward = new Reward((long) 3, "Discount -45%", 50, LocalDate.parse("2021-06-30"), customerList().get(0),
                 RewardStatus.Unrealized);
@@ -323,7 +323,7 @@ class RewardControllerTest {
     @Test
     void deleteReward_falseIf_returnFalse() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,false, true);
 
         Reward reward = new Reward((long) 3, "Discount -45%", 50, LocalDate.parse("2021-06-30"), customerList().get(0),
                 RewardStatus.Realized);

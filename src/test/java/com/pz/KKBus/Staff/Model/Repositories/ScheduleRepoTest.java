@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,6 +30,9 @@ class ScheduleRepoTest {
     @Autowired
     private EmployeesRepo employeesRepo;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private List<Schedule> scheduleList() {
         List<Schedule> schedule = new ArrayList<>();
         schedule.add(new Schedule((long) 1, LocalDate.parse("2021-12-22"), LocalTime.parse("08:10"), LocalTime.parse("14:15"),
@@ -44,11 +48,14 @@ class ScheduleRepoTest {
         List<Employees> employees = new ArrayList<>();
 
         employees.add(new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, 5000));
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, "KowalskiJan",
+                passwordEncoder.encode("KowalskiJan"), 5000));
         employees.add(new Employees((long) 2,"Anna",
-                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, 3000));
-        employees.add(new Employees((long) 3,"Marek",
-                "Markowski", LocalDate.parse("1997-05-20"), Role.Driver, 3000));
+                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, "NowakAnna",
+                passwordEncoder.encode("NowakAnna"), 3000));
+        employees.add(new Employees((long) 3,"Andrzej",
+                "Konrad", LocalDate.parse("1988-05-20"), Role.Driver, "KonradAndrzej",
+                passwordEncoder.encode("KonradAndrzej"), 3000));
         return employees;
     }
 

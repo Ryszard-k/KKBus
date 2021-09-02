@@ -28,6 +28,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -78,6 +79,9 @@ class CoursesControllerTest {
     @MockBean
     private KrakowToKatowiceDepartureManager krakowToKatowiceDepartureManager;
 
+    @MockBean
+    private PasswordEncoder passwordEncoder;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -120,11 +124,14 @@ class CoursesControllerTest {
     private List<Employees> employeesList() {
         List<Employees> employees = new ArrayList<>();
         employees.add(new Employees((long) 1,"Jan",
-                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, 5000));
+                "Kowalski", LocalDate.parse("1983-02-23"), Role.Admin, "KowalskiJan",
+                passwordEncoder.encode("KowalskiJan"), 5000));
         employees.add(new Employees((long) 2,"Anna",
-                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, 3000));
+                "Nowak", LocalDate.parse("1997-05-20"), Role.OfficeWorker, "NowakAnna",
+                passwordEncoder.encode("NowakAnna"), 3000));
         employees.add(new Employees((long) 3,"Andrzej",
-                "Konrad", LocalDate.parse("1988-05-20"), Role.Driver, 4000));
+                "Konrad", LocalDate.parse("1988-05-20"), Role.Driver, "KonradAndrzej",
+                passwordEncoder.encode("KonradAndrzej"), 4000));
         return employees;
     }
 

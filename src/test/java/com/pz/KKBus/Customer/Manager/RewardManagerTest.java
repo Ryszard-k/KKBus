@@ -49,7 +49,7 @@ class RewardManagerTest {
         List<Customer> customers = new ArrayList<>();
 
         customers.add(new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true));
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,false, true));
         return customers;
     }
 

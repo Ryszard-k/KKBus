@@ -84,7 +84,7 @@ class ReservationControllerTest {
     private List<Customer> customerList(){
         List<Customer> customers = new ArrayList<>();
         customers.add(new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true));
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true));
         return customers;
     }
 
@@ -128,7 +128,7 @@ class ReservationControllerTest {
     @Test
     void getById() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> found = Optional.of(new Reservation((long) 1, LocalDate.parse("2020-06-26"), LocalTime.parse("08:30"), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -196,7 +196,7 @@ class ReservationControllerTest {
     @Test
     void addReservationAdmin() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.parse("2020-06-26"), LocalTime.parse("08:30"), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -226,7 +226,7 @@ class ReservationControllerTest {
     @Test
     void addReservationAdmin_shouldReturnFalse_nullCustomerAndEmptyReservation() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.parse("2020-06-26"), LocalTime.parse("08:30"), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -249,7 +249,7 @@ class ReservationControllerTest {
     @Test
     void addReservation_KrkToKt_MonFri_returnTrue() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(3), LocalTime.now().plusHours(2), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -288,7 +288,7 @@ class ReservationControllerTest {
     @Test
     void addReservation_KrkToKt_SatSun_returnTrue() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(1), LocalTime.now().plusHours(2), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -327,7 +327,7 @@ class ReservationControllerTest {
     @Test
     void addReservation_KrkToKt_badDate_returnFalse() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(10), LocalTime.now().plusHours(2), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -363,7 +363,7 @@ class ReservationControllerTest {
     @Test
     void addReservation_KtToKrk_MonFri_returnTrue() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(3), LocalTime.now().plusHours(2), 2,
                 Route.KatowiceToKrakow, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -402,7 +402,7 @@ class ReservationControllerTest {
     @Test
     void addReservation_KtToKrk_SatSun_returnTrue() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(1), LocalTime.now().plusHours(2), 2,
                 Route.KatowiceToKrakow, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -441,7 +441,7 @@ class ReservationControllerTest {
     @Test
     void addReservation_KtToKrk_differenceOutOfBound_returnFalse() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(10), LocalTime.now().plusHours(2), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -477,7 +477,7 @@ class ReservationControllerTest {
     @Test
     void deleteReservation_KtToKrk_SatSun_ReturnTrue() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(2), LocalTime.now().plusHours(2), 2,
                 Route.KatowiceToKrakow, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -514,7 +514,7 @@ class ReservationControllerTest {
     @Test
     void deleteReservation_KtToKrk_MonFri_ReturnTrue() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(5), LocalTime.now().plusHours(2), 2,
                 Route.KatowiceToKrakow, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -551,7 +551,7 @@ class ReservationControllerTest {
     @Test
     void deleteReservation_KtToKrk_differenceOutOfBound_ReturnFalse() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now(), LocalTime.now(), 2,
                 Route.KatowiceToKrakow, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -585,7 +585,7 @@ class ReservationControllerTest {
     @Test
     void deleteReservation_KrkToKt_SatSun_ReturnTrue() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(2), LocalTime.now().plusHours(2), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -622,7 +622,7 @@ class ReservationControllerTest {
     @Test
     void deleteReservation_KrkToKt_MonFri_ReturnTrue() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(5), LocalTime.now().plusHours(2), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -659,7 +659,7 @@ class ReservationControllerTest {
     @Test
     void deleteReservation_KrkToKt_differenceOutOfBound_ReturnFalse() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now(), LocalTime.now(), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -693,7 +693,7 @@ class ReservationControllerTest {
     @Test
     void deleteReservationAdmin_returnTrue() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(5), LocalTime.now().plusHours(2), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));
@@ -726,7 +726,7 @@ class ReservationControllerTest {
     @Test
     void deleteReservationAdmin_returnFalse() throws Exception {
         Customer customer = new Customer((long) 1,"Marek","Kowalski",LocalDate.parse("1983-02-23"),"piotr.wojcik543@gmail.com",
-                123456789,"kowalski", "kowalski123", Role.CustomerEnabled,true);
+                123456789,"kowalski", "kowalski123", Role.CustomerEnabled, false, true);
 
         Optional<Reservation> reservation = Optional.of(new Reservation((long) 1, LocalDate.now().plusDays(5), LocalTime.now().plusHours(2), 2,
                 Route.KrakowToKatowice, "Przystanek1", "Przystanek2", customer, Status.Unrealized));

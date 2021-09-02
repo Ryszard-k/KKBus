@@ -88,7 +88,7 @@ public class ReservationController {
             return new ResponseEntity<>("Empty input data", HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping(path = "/{username}",
+    @PostMapping(path = "/user/{username}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -144,7 +144,7 @@ public class ReservationController {
         } else return new ResponseEntity<>("Bad date", HttpStatus.BAD_REQUEST);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/user/{id}")
     public ResponseEntity<Object> deleteReservation(@PathVariable Long id) {
         Optional<Reservation> foundReservation = reservationManager.findById(id);
         long difference = 0;
