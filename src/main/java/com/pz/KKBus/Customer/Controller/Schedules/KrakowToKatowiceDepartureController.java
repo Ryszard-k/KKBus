@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/krakowToKatowice/departure")
 public class KrakowToKatowiceDepartureController {
 
