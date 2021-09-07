@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -48,7 +49,8 @@ public class WebSecurityConfig {
 
         @Override
         protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-            authenticationManagerBuilder.userDetailsService(userDetailServiceImpl);
+            authenticationManagerBuilder
+                    .userDetailsService(userDetailServiceImpl);
         }
 
         @Override
@@ -56,6 +58,9 @@ public class WebSecurityConfig {
             web.ignoring()
                     .antMatchers("/sign-up")
                     .antMatchers("/register")
+                    .antMatchers("/password")
+                    .antMatchers("/chpassword")
+                    .antMatchers("/token/*")
                     .antMatchers(HttpMethod.GET, "/katowiceToKrakow")
                     .antMatchers(HttpMethod.GET, "/krakowToKatowice")
                     .antMatchers(HttpMethod.GET, "/katowiceToKrakow/departure")
@@ -78,9 +83,6 @@ public class WebSecurityConfig {
                         Role.OfficeWorker.name())
                     .antMatchers("/krakowToKatowice/*").hasAnyAuthority(Role.Admin.name(),
                         Role.OfficeWorker.name())
-                    .antMatchers("/token").hasAuthority(Role.CustomerDisabled.name())
-                    .antMatchers("/password").hasAuthority(Role.CustomerEnabled.name())
-                    .antMatchers("/chpassword").hasAuthority(Role.CustomerEnabled.name())
                     .antMatchers("/customer").hasAnyAuthority(Role.Admin.name(),
                     Role.OfficeWorker.name())
                     .antMatchers("/customer/*").hasAnyAuthority(Role.Admin.name(),

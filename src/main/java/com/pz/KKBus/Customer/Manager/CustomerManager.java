@@ -8,10 +8,17 @@ import com.pz.KKBus.Customer.Model.Repositories.ReservationRepo;
 import com.pz.KKBus.Customer.Model.Repositories.TokenRepo;
 import com.pz.KKBus.Customer.Model.Repositories.CustomerRepo;
 import com.pz.KKBus.Customer.Model.Entites.Customer;
+import com.pz.KKBus.Security.Services.UserDetailServiceImpl;
 import com.pz.KKBus.Staff.Model.Enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,11 +31,11 @@ import java.util.*;
 @Service
 public class CustomerManager {
 
-    private CustomerRepo customerRepo;
-    private PasswordEncoder passwordEncoder;
-    private TokenRepo tokenRepo;
-    private MailManager mailManager;
-    private ReservationRepo reservationRepo;
+    private final CustomerRepo customerRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenRepo tokenRepo;
+    private final MailManager mailManager;
+    private final ReservationRepo reservationRepo;
 
     @Autowired
     public CustomerManager(CustomerRepo customerRepo, PasswordEncoder passwordEncoder, TokenRepo tokenRepo, MailManager mailManager, ReservationRepo reservationRepo) {
@@ -118,14 +125,13 @@ public class CustomerManager {
         token.setValue(tokenValue);
         token.setCustomer(customer);
         tokenRepo.save(token);
-        String url = "https://kkbusy.herokuapp.com/token?value=" + tokenValue;
+        String url = "http://localhost:8080/token/token?value=" + tokenValue;
         try {
             mailManager.sendMail(customer.getEmail(), "Confirm your account", url + "\n" + "Username: " +
                             customer.getUsername(), false);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-
     }
 
     @EventListener(ApplicationReadyEvent.class)
