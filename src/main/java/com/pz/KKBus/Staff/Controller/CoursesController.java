@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/courses")
 public class CoursesController implements CrudControllerMethods<Courses>{
 

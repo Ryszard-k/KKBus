@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/report")
 public class ReportController implements CrudControllerMethods<ReportWithReservationsIds> {
 
